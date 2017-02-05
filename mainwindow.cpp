@@ -131,7 +131,7 @@ void MainWindow::onItemClicked( QTreeWidgetItem * item , int column )
                                  hexText );
 
                 temp = mStructTree->addField( e_struct ,
-                                              tr( "TypeOffset" ) ,
+                                              ( "TypeOffset" ) ,
                                               pRvaInfo->rva + i * sizeof( WORD ) ,
                                               sizeof( WORD ) ,
                                               comment ,
@@ -245,7 +245,7 @@ void MainWindow::analysisPEFile( )
     // 解析文件头
     token( 0 , sizeof( IMAGE_DOS_HEADER ) , QColor( Qt::gray ) );
     parent = mStructTree->addField( e_struct ,
-                                    tr( "IMAGE_DOS_HEADER" ) ,
+                                    ( "IMAGE_DOS_HEADER" ) ,
                                     0 ,
                                     sizeof( IMAGE_DOS_HEADER ) ,
                                     tr( "pe file dos header" ) ,
@@ -255,7 +255,7 @@ void MainWindow::analysisPEFile( )
                                     );
    
     mStructTree->addField( e_base ,
-                           tr("WORD e_magic" ),
+                           ("WORD e_magic" ),
                            fieldOffset( IMAGE_DOS_HEADER , e_magic ) ,
                            sizeof( WORD ) ,
                            tr("magic word" ) ,
@@ -264,7 +264,7 @@ void MainWindow::analysisPEFile( )
                            );
 
     mStructTree->addField( e_base ,
-                           tr( "WORD e_cblp" ) ,
+                           ( "WORD e_cblp" ) ,
                            fieldOffset(IMAGE_DOS_HEADER,e_cblp),
                            sizeof( WORD ) ,
                            "",
@@ -280,7 +280,7 @@ void MainWindow::analysisPEFile( )
                            parent
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD e_cp" ) ,
+                           ( "WORD e_cp" ) ,
                            fieldOffset( IMAGE_DOS_HEADER , e_cp ) ,
                            sizeof( WORD ) ,
                            "" ,
@@ -296,7 +296,7 @@ void MainWindow::analysisPEFile( )
                            parent
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD e_cparhdr" ) ,
+                           ( "WORD e_cparhdr" ) ,
                            fieldOffset( IMAGE_DOS_HEADER , e_cparhdr ) ,
                            sizeof( WORD ) ,
                            "" ,
@@ -312,7 +312,7 @@ void MainWindow::analysisPEFile( )
                            parent
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD e_maxalloc" ) ,
+                           ( "WORD e_maxalloc" ) ,
                            fieldOffset( IMAGE_DOS_HEADER , e_maxalloc ) ,
                            sizeof( peFile.getDosHeader( )->e_minalloc ) ,
                            "" ,
@@ -330,7 +330,7 @@ void MainWindow::analysisPEFile( )
                            parent
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD e_sp" ) ,
+                           ( "WORD e_sp" ) ,
                            fieldOffset( IMAGE_DOS_HEADER , e_sp ) ,
                            sizeof( peFile.getDosHeader( )->e_sp ) ,
                            "" ,
@@ -338,7 +338,7 @@ void MainWindow::analysisPEFile( )
                            parent
                            );
     mStructTree->addField( e_base ,
-                           tr( "LONG e_lfanew" ) ,
+                           ( "LONG e_lfanew" ) ,
                            fieldOffset( IMAGE_DOS_HEADER , e_lfanew ) ,
                            sizeof( peFile.getDosHeader( )->e_lfanew ) ,
                            tr("pointer to nt header(is a file offset)") ,
@@ -352,7 +352,7 @@ void MainWindow::analysisPEFile( )
     if( peFile.getFileHeader( )->Characteristics&IMAGE_FILE_32BIT_MACHINE )
     {
         parent = mStructTree->addField( e_struct ,
-                                        tr( "IMAGE_NT_HEADERS32" ) ,
+                                        ( "IMAGE_NT_HEADERS32" ) ,
                                         parentBase ,
                                         sizeof( IMAGE_NT_HEADERS32 ) ,
                                         tr( "pe file Nt header(32Bit)" ) ,
@@ -361,7 +361,7 @@ void MainWindow::analysisPEFile( )
     }
     else if( peFile.getOptionHeader32( )->Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC ) {
         parent = mStructTree->addField( e_struct ,
-                                        tr( "IMAGE_NT_HEADERS64" ) ,
+                                        ( "IMAGE_NT_HEADERS64" ) ,
                                         parentBase ,
                                         sizeof( IMAGE_NT_HEADERS64 ) ,
                                         tr( "PE file nt header(64Bit)" ) ,
@@ -370,7 +370,7 @@ void MainWindow::analysisPEFile( )
     }
    
    mStructTree->addField( e_base ,
-                           tr( "DWORD Signature" ) ,
+                           ( "DWORD Signature" ) ,
                            parentBase + fieldOffset( IMAGE_NT_HEADERS32 , Signature ) ,
                            sizeof( peFile.getNtHeader( )->Signature ) ,
                            tr( "pe file signature" ) ,
@@ -382,7 +382,7 @@ void MainWindow::analysisPEFile( )
     
     token( parentBase + fieldOffset( IMAGE_NT_HEADERS32 , FileHeader ) , sizeof( peFile.getNtHeader( )->FileHeader ) , QColor( Qt::blue ) );
     fileHeaderField = mStructTree->addField( e_struct ,
-                                             tr( "IMAGE_FILE_HEADER FileHeader" ) ,
+                                             ( "IMAGE_FILE_HEADER FileHeader" ) ,
                                              parentBase + fieldOffset( IMAGE_NT_HEADERS32 , FileHeader ) ,
                                              sizeof( peFile.getNtHeader( )->FileHeader ) ,
                                              tr( "PE file fileHeader" ) ,
@@ -394,7 +394,7 @@ void MainWindow::analysisPEFile( )
     token( parentBase + fieldOffset( IMAGE_NT_HEADERS32 , OptionalHeader ) , sizeof( peFile.getNtHeader( )->OptionalHeader ) , QColor( Qt::red ) );
     if( peFile.getFileHeader( )->Characteristics&IMAGE_FILE_32BIT_MACHINE ) {
         optionHeaderFiele = mStructTree->addField( e_struct ,
-                                                   tr( "IMAGE_OPTIONAL_HEADER32 OptionalHeader" ) ,
+                                                   ( "IMAGE_OPTIONAL_HEADER32 OptionalHeader" ) ,
                                                    parentBase + fieldOffset( IMAGE_NT_HEADERS32 , OptionalHeader ) ,
                                                    peFile.getFileHeader( )->SizeOfOptionalHeader ,
                                                    tr( "32Bit pe file option header" ) ,
@@ -405,7 +405,7 @@ void MainWindow::analysisPEFile( )
     }
     else if( peFile.getOptionHeader32( )->Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC ) {
         optionHeaderFiele = mStructTree->addField( e_struct ,
-                                                   tr( "IMAGE_NT_HEADERS64 OptionalHeader" ) ,
+                                                   ( "IMAGE_NT_HEADERS64 OptionalHeader" ) ,
                                                    parentBase + fieldOffset( IMAGE_NT_HEADERS64 , OptionalHeader ) ,
                                                    peFile.getFileHeader()->SizeOfOptionalHeader ,
                                                    tr( "64Bit pe file option header" ) ,
@@ -417,7 +417,7 @@ void MainWindow::analysisPEFile( )
 
     parentBase += fieldOffset( IMAGE_NT_HEADERS32 , FileHeader );
     mStructTree->addField( e_base ,
-                           tr( "WORD Machine" ) ,
+                           ( "WORD Machine" ) ,
                            parentBase + fieldOffset( IMAGE_FILE_HEADER , Machine ) ,
                            sizeof( peFile.getFileHeader( )->Machine ) ,
                            tr( "CPU Kind" ) ,
@@ -425,7 +425,7 @@ void MainWindow::analysisPEFile( )
                            fileHeaderField
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD NumberOfSections" ) ,
+                           ( "WORD NumberOfSections" ) ,
                            parentBase + fieldOffset( IMAGE_FILE_HEADER , NumberOfSections ) ,
                            sizeof( peFile.getFileHeader( )->NumberOfSections ) ,
                            tr( "PE section Total" ) ,
@@ -433,7 +433,7 @@ void MainWindow::analysisPEFile( )
                            fileHeaderField
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD TimeDateStamp" ) ,
+                           ( "DWORD TimeDateStamp" ) ,
                            parentBase + fieldOffset( IMAGE_FILE_HEADER , TimeDateStamp ) ,
                            sizeof( peFile.getFileHeader( )->TimeDateStamp ) ,
                            tr( "TimeDateStamp" ) ,
@@ -441,7 +441,7 @@ void MainWindow::analysisPEFile( )
                            fileHeaderField
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD NumberOfSymbols" ) ,
+                           ( "DWORD NumberOfSymbols" ) ,
                            parentBase + fieldOffset( IMAGE_FILE_HEADER , NumberOfSymbols ) ,
                            sizeof( peFile.getFileHeader( )->NumberOfSymbols ) ,
                            tr( "NumberOfSymbols(invalid)" ) ,
@@ -449,7 +449,7 @@ void MainWindow::analysisPEFile( )
                            fileHeaderField
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD  SizeOfOptionalHeader" ) ,
+                           ( "WORD  SizeOfOptionalHeader" ) ,
                            parentBase + fieldOffset( IMAGE_FILE_HEADER , SizeOfOptionalHeader ) ,
                            sizeof( peFile.getFileHeader( )->SizeOfOptionalHeader ) ,
                            tr( "Size of OptionalHeader" ) ,
@@ -457,7 +457,7 @@ void MainWindow::analysisPEFile( )
                            fileHeaderField
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD  Characteristics" ) ,
+                           ( "WORD  Characteristics" ) ,
                            parentBase + fieldOffset( IMAGE_FILE_HEADER , Characteristics ) ,
                            sizeof( peFile.getFileHeader( )->Characteristics ) ,
                            tr( "PE file Characteristics" ) ,
@@ -473,7 +473,7 @@ void MainWindow::analysisPEFile( )
     parentBase = peFile.getDosHeader( )->e_lfanew + fieldOffset( IMAGE_NT_HEADERS32 , OptionalHeader );
 
     mStructTree->addField( e_base ,
-                           tr( "WORD Magic" ) ,
+                           ( "WORD Magic" ) ,
                            parentBase + ( OPTHDROFFSET( Magic ) ) ,
                            sizeof( peFile.getOptionHeader32( )->Magic ) ,
                            tr( "PE file type (32Bit/64Bit/ROM)" ) ,
@@ -481,7 +481,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "BYTE MajorLinkerVersion" ) ,
+                           ( "BYTE MajorLinkerVersion" ) ,
                            parentBase + ( OPTHDROFFSET( MajorLinkerVersion ) ) ,
                            sizeof( peFile.getOptionHeader32( )->MajorLinkerVersion ) ,
                            tr( "Major Linker Version" ) ,
@@ -490,7 +490,7 @@ void MainWindow::analysisPEFile( )
                            );
 
     mStructTree->addField( e_base ,
-                           tr( "BYTE MinorLinkerVersion" ) ,
+                           ( "BYTE MinorLinkerVersion" ) ,
                            parentBase + ( OPTHDROFFSET( MinorLinkerVersion ) ) ,
                            sizeof( peFile.getOptionHeader32( )->MinorLinkerVersion ) ,
                            tr( "Minor linker version" ) ,
@@ -498,7 +498,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD SizeOfCode" ) ,
+                           ( "DWORD SizeOfCode" ) ,
                            parentBase + ( OPTHDROFFSET( SizeOfCode ) ) ,
                            sizeof( peFile.getOptionHeader32( )->SizeOfCode ) ,
                            tr( "PE file code segment size" ) ,
@@ -506,7 +506,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD SizeOfInitializedData" ) ,
+                           ( "DWORD SizeOfInitializedData" ) ,
                            parentBase + ( OPTHDROFFSET( SizeOfInitializedData ) ) ,
                            sizeof( peFile.getOptionHeader32( )->SizeOfInitializedData ) ,
                            tr( "PE file initialized data size" ) ,
@@ -514,7 +514,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD SizeOfUninitializedData" ) ,
+                           ( "DWORD SizeOfUninitializedData" ) ,
                            parentBase + ( OPTHDROFFSET( SizeOfUninitializedData ) ) ,
                            sizeof( peFile.getOptionHeader32( )->SizeOfUninitializedData ) ,
                            tr( "PE file uninitialized data size" ) ,
@@ -522,7 +522,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD AddressOfEntryPoint" ) ,
+                           ( "DWORD AddressOfEntryPoint" ) ,
                            parentBase + ( OPTHDROFFSET( AddressOfEntryPoint ) ) ,
                            sizeof( peFile.getOptionHeader32( )->AddressOfEntryPoint ) ,
                            tr( "OEP(is a RVA)" ) ,
@@ -530,7 +530,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele , 0 , peFile.RVAToOfs( (int)peFile.getOptionHeader32( )->AddressOfEntryPoint )
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD BaseOfCode" ) ,
+                           ( "DWORD BaseOfCode" ) ,
                            parentBase + ( OPTHDROFFSET( BaseOfCode ) ) ,
                            sizeof( peFile.getOptionHeader32( )->BaseOfCode ) ,
                            tr( "PE data segment's RVA" ) ,
@@ -540,7 +540,7 @@ void MainWindow::analysisPEFile( )
 
     if( bIs32PeFile ) {
         mStructTree->addField( e_base ,
-                               tr( "DWORD BaseOfData" ) ,
+                               ( "DWORD BaseOfData" ) ,
                                parentBase + ( fieldOffset( IMAGE_OPTIONAL_HEADER32 , BaseOfData ) ) ,
                                sizeof( peFile.getOptionHeader32( )->BaseOfData ) ,
                                tr( "PE data segment's RVA" ) ,
@@ -548,7 +548,7 @@ void MainWindow::analysisPEFile( )
                                optionHeaderFiele , 0 , peFile.RVAToOfs( (int)peFile.getOptionHeader32( )->BaseOfData )
                                );
         mStructTree->addField( e_base ,
-                               tr( "DWORD ImageBase" ) ,
+                               ( "DWORD ImageBase" ) ,
                                parentBase + ( fieldOffset( IMAGE_OPTIONAL_HEADER32 , ImageBase ) ) ,
                                sizeof( peFile.getOptionHeader32( )->ImageBase ) ,
                                tr( "pe file lao" ) ,
@@ -559,7 +559,7 @@ void MainWindow::analysisPEFile( )
     else if( peFile.getOptionHeader32( )->Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC ) {
 
         mStructTree->addField( e_base ,
-                               tr( "ULONGLONG ImageBase" ) ,
+                               ( "ULONGLONG ImageBase" ) ,
                                parentBase + ( fieldOffset( IMAGE_OPTIONAL_HEADER64 , ImageBase ) ) ,
                                sizeof( peFile.getOptionHeader64( )->ImageBase ) ,
                                tr( "image address in memory " ) ,
@@ -569,7 +569,7 @@ void MainWindow::analysisPEFile( )
     }
 
     mStructTree->addField( e_base ,
-                           tr( "DWORD SectionAlignment" ) ,
+                           ( "DWORD SectionAlignment" ) ,
                            parentBase + ( OPTHDROFFSET( SectionAlignment ) ) ,
                            sizeof( peFile.getOptionHeader32( )->SectionAlignment ) ,
                            tr( "Section in memory alignment value" ) ,
@@ -577,7 +577,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele );
 
     mStructTree->addField( e_base ,
-                           tr( "DWORD FileAlignment" ) ,
+                           ( "DWORD FileAlignment" ) ,
                            parentBase + ( OPTHDROFFSET( FileAlignment ) ) ,
                            sizeof( peFile.getOptionHeader32( )->FileAlignment ) ,
                            tr( "Section in disk alignment value" ) ,
@@ -586,7 +586,7 @@ void MainWindow::analysisPEFile( )
                            );
 
     mStructTree->addField( e_base ,
-                           tr( "WORD MajorOperatingSystemVersion" ) ,
+                           ( "WORD MajorOperatingSystemVersion" ) ,
                            parentBase + ( OPTHDROFFSET( MajorOperatingSystemVersion ) ) ,
                            sizeof( peFile.getOptionHeader32( )->MajorOperatingSystemVersion ) ,
                            tr( "Major OperatingSystem Version" ) ,
@@ -594,7 +594,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD MinorOperatingSystemVersion" ) ,
+                           ( "WORD MinorOperatingSystemVersion" ) ,
                            parentBase + ( OPTHDROFFSET( MinorOperatingSystemVersion ) ) ,
                            sizeof( peFile.getOptionHeader32( )->MinorOperatingSystemVersion ) ,
                            tr( "Minor OperatingSystem Version" ) ,
@@ -602,7 +602,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD MajorImageVersion" ) ,
+                           ( "WORD MajorImageVersion" ) ,
                            parentBase + ( OPTHDROFFSET( MajorImageVersion ) ) ,
                            sizeof( peFile.getOptionHeader32( )->MajorImageVersion ) ,
                            tr( " Major PE Image Version" ) ,
@@ -610,7 +610,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD MinorImageVersion" ) ,
+                           ( "WORD MinorImageVersion" ) ,
                            parentBase + ( OPTHDROFFSET( MinorImageVersion ) ) ,
                            sizeof( peFile.getOptionHeader32( )->MinorImageVersion ) ,
                            tr( "PE Minor Image Version" ) ,
@@ -618,7 +618,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD MajorSubsystemVersion" ) ,
+                           ( "WORD MajorSubsystemVersion" ) ,
                            parentBase + ( OPTHDROFFSET( MajorSubsystemVersion ) ) ,
                            sizeof( peFile.getOptionHeader32( )->MajorSubsystemVersion ) ,
                            tr( "Major Subsystem Version" ) ,
@@ -626,7 +626,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD MinorSubsystemVersion" ) ,
+                           ( "WORD MinorSubsystemVersion" ) ,
                            parentBase + ( OPTHDROFFSET( MinorSubsystemVersion ) ) ,
                            sizeof( peFile.getOptionHeader32( )->MinorSubsystemVersion ) ,
                            tr( "Minor Subsystem Version" ) ,
@@ -634,7 +634,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD Win32VersionValue" ) ,
+                           ( "DWORD Win32VersionValue" ) ,
                            parentBase + ( OPTHDROFFSET( Win32VersionValue ) ) ,
                            sizeof( peFile.getOptionHeader32( )->Win32VersionValue ) ,
                            tr( "Win32 Version Value" ) ,
@@ -642,7 +642,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD SizeOfImage" ) ,
+                           ( "DWORD SizeOfImage" ) ,
                            parentBase + ( OPTHDROFFSET( SizeOfImage ) ) ,
                            sizeof( peFile.getOptionHeader32( )->SizeOfImage ) ,
                            tr( "size of image in memory " ) ,
@@ -650,7 +650,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD SizeOfHeaders" ) ,
+                           ( "DWORD SizeOfHeaders" ) ,
                            parentBase + ( OPTHDROFFSET( SizeOfHeaders ) ) ,
                            sizeof( peFile.getOptionHeader32( )->SizeOfHeaders ) ,
                            tr( "Size Of Headers" ) ,
@@ -658,7 +658,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD CheckSum" ) ,
+                           ( "DWORD CheckSum" ) ,
                            parentBase + ( OPTHDROFFSET( CheckSum ) ) ,
                            sizeof( peFile.getOptionHeader32( )->CheckSum ) ,
                            tr( "CheckSum" ) ,
@@ -666,7 +666,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD Subsystem" ) ,
+                           ( "WORD Subsystem" ) ,
                            parentBase + ( OPTHDROFFSET( Subsystem ) ) ,
                            sizeof( peFile.getOptionHeader32( )->Subsystem ) ,
                            tr( "Subsystem" ) ,
@@ -674,7 +674,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "WORD DllCharacteristics" ) ,
+                           ( "WORD DllCharacteristics" ) ,
                            parentBase + ( OPTHDROFFSET( DllCharacteristics ) ) ,
                            sizeof( peFile.getOptionHeader32( )->DllCharacteristics ) ,
                            tr( "DllCharacteristics" ) ,
@@ -685,7 +685,7 @@ void MainWindow::analysisPEFile( )
 
     if( bIs32PeFile ) {
         mStructTree->addField( e_base ,
-                               tr( "DWORD SizeOfStackReserve" ) ,
+                               ( "DWORD SizeOfStackReserve" ) ,
                                parentBase + ( fieldOffset( IMAGE_OPTIONAL_HEADER32 , SizeOfStackReserve ) ) ,
                                sizeof( peFile.getOptionHeader32( )->SizeOfStackReserve ) ,
                                tr( "SizeOfStackReserve" ) ,
@@ -695,7 +695,7 @@ void MainWindow::analysisPEFile( )
     }
     else if( peFile.getOptionHeader32( )->Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC ) {
         mStructTree->addField( e_base ,
-                               tr( "ULONGLONG SizeOfStackReserve" ) ,
+                               ( "ULONGLONG SizeOfStackReserve" ) ,
                                parentBase + ( fieldOffset( IMAGE_OPTIONAL_HEADER64 , SizeOfStackReserve ) ) ,
                                sizeof( peFile.getOptionHeader64( )->SizeOfStackReserve ) ,
                                tr( "SizeOfStackReserve" ) ,
@@ -706,7 +706,7 @@ void MainWindow::analysisPEFile( )
 
     if( bIs32PeFile ) {
         mStructTree->addField( e_base ,
-                               tr( "DWORD SizeOfStackCommit" ) ,
+                               ( "DWORD SizeOfStackCommit" ) ,
                                parentBase + ( fieldOffset( IMAGE_OPTIONAL_HEADER32 , SizeOfStackCommit ) ) ,
                                sizeof( peFile.getOptionHeader32( )->SizeOfStackCommit ) ,
                                tr( "SizeOfStackCommit" ) ,
@@ -716,7 +716,7 @@ void MainWindow::analysisPEFile( )
     }
     else if( peFile.getOptionHeader32( )->Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC ) {
         mStructTree->addField( e_base ,
-                               tr( "ULONGLONG SizeOfStackCommit" ) ,
+                               ( "ULONGLONG SizeOfStackCommit" ) ,
                                parentBase + ( fieldOffset( IMAGE_OPTIONAL_HEADER64 , SizeOfStackCommit ) ) ,
                                sizeof( peFile.getOptionHeader64( )->SizeOfStackCommit ) ,
                                tr( "SizeOfStackCommit" ) ,
@@ -727,7 +727,7 @@ void MainWindow::analysisPEFile( )
 
     if( bIs32PeFile ) {
         mStructTree->addField( e_base ,
-                               tr( "DWORD SizeOfHeapReserve" ) ,
+                               ( "DWORD SizeOfHeapReserve" ) ,
                                parentBase + ( fieldOffset( IMAGE_OPTIONAL_HEADER32 , SizeOfHeapReserve ) ) ,
                                sizeof( peFile.getOptionHeader32( )->SizeOfHeapReserve ) ,
                                tr( "SizeOfHeapReserve" ) ,
@@ -738,7 +738,7 @@ void MainWindow::analysisPEFile( )
     else if( peFile.getOptionHeader32( )->Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC ) {
 
         mStructTree->addField( e_base ,
-                               tr( "ULONGLONG SizeOfHeapReserve" ) ,
+                               ( "ULONGLONG SizeOfHeapReserve" ) ,
                                parentBase + ( fieldOffset( IMAGE_OPTIONAL_HEADER64 , SizeOfHeapReserve ) ) ,
                                sizeof( peFile.getOptionHeader64( )->SizeOfHeapReserve ) ,
                                tr( "SizeOfHeapReserve" ) ,
@@ -749,7 +749,7 @@ void MainWindow::analysisPEFile( )
 
     if( bIs32PeFile ) {
         mStructTree->addField( e_base ,
-                               tr( "DWORD SizeOfHeapCommit" ) ,
+                               ( "DWORD SizeOfHeapCommit" ) ,
                                parentBase + ( fieldOffset( IMAGE_OPTIONAL_HEADER32 , SizeOfHeapCommit ) ) ,
                                sizeof( peFile.getOptionHeader32( )->SizeOfHeapCommit ) ,
                                tr( "SizeOfHeapCommit" ) ,
@@ -759,7 +759,7 @@ void MainWindow::analysisPEFile( )
     }
     else if( peFile.getOptionHeader32( )->Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC ) {
         mStructTree->addField( e_base ,
-                               tr( "ULONGLONG SizeOfHeapCommit" ) ,
+                               ( "ULONGLONG SizeOfHeapCommit" ) ,
                                parentBase + ( fieldOffset( IMAGE_OPTIONAL_HEADER64 , SizeOfHeapCommit ) ) ,
                                sizeof( peFile.getOptionHeader64( )->SizeOfHeapCommit ) ,
                                tr( "SizeOfHeapCommit" ) ,
@@ -773,7 +773,7 @@ void MainWindow::analysisPEFile( )
     
 
     mStructTree->addField( e_base ,
-                           tr( "DWORD LoaderFlags" ) ,
+                           ( "DWORD LoaderFlags" ) ,
                            parentBase + ( OPTHDROFFSET( LoaderFlags ) ) ,
                            sizeof( peFile.getOptionHeader32( )->LoaderFlags ) ,
                            tr( "LoaderFlags" ) ,
@@ -781,7 +781,7 @@ void MainWindow::analysisPEFile( )
                            optionHeaderFiele
                            );
     mStructTree->addField( e_base ,
-                           tr( "DWORD NumberOfRvaAndSizes" ) ,
+                           ( "DWORD NumberOfRvaAndSizes" ) ,
                            parentBase + ( OPTHDROFFSET( NumberOfRvaAndSizes ) ) ,
                            sizeof( peFile.getOptionHeader32( )->NumberOfRvaAndSizes ) ,
                            tr( "NumberOfRvaAndSizes" ) ,
@@ -790,7 +790,7 @@ void MainWindow::analysisPEFile( )
                            );
 
     parent = mStructTree->addField( e_base ,
-                                    tr( "IMAGE_DATA_DIRECTORY DataDirectory[]" ) ,
+                                    ( "IMAGE_DATA_DIRECTORY DataDirectory[]" ) ,
                                     parentBase + ( OPTHDROFFSET( DataDirectory ) ) ,
                                     sizeof( peFile.getOptionHeader32( )->DataDirectory ) ,
                                     tr( "data directory ,like import table , export table" ) ,
@@ -819,7 +819,7 @@ void MainWindow::analysisPEFile( )
                                        );  
            
         mStructTree->addField( e_base ,
-                               tr( "VirtualAddress" ) ,
+                               ( "VirtualAddress" ) ,
                                parentBase + sizeof( IMAGE_DATA_DIRECTORY ) * index ,
                                sizeof( DWORD ) ,
                                tr( "table VirtualAddress" ) ,
@@ -831,7 +831,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr("Size") ,
+                               ("Size") ,
                                parentBase + sizeof( IMAGE_DATA_DIRECTORY ) * index + sizeof( DWORD ) ,
                                sizeof( DWORD ) ,
                                tr( "size of table" ) ,
@@ -864,7 +864,7 @@ void MainWindow::analysisPEFile( )
         Field* misc = nullptr;
         // 添加区段表
         parent = mStructTree->addField( e_struct ,
-                                        tr( "Section :%1" ).arg( (char*)pSec->Name ) ,
+                                        QString( "Section :%1" ).arg( (char*)pSec->Name ) ,
                                         parentBase + nIndex * IMAGE_SIZEOF_SECTION_HEADER ,
                                         IMAGE_SIZEOF_SECTION_HEADER ,
                                         "" ,
@@ -874,16 +874,16 @@ void MainWindow::analysisPEFile( )
         // 添加区段表字段
         int nBaseOffset = parentBase + nIndex * IMAGE_SIZEOF_SECTION_HEADER;;
         mStructTree->addField( e_base ,
-                               tr( "BYTE Name[] " ) ,
+                               ( "BYTE Name[] " ) ,
                                nBaseOffset + fieldOffset( IMAGE_SECTION_HEADER , Name ) ,
                                sizeof( pSec->Name ) ,
                                tr( "Section name" ),
-                               tr( "%1" ).arg((char*)pSec->Name) ,
+                               QString( "%1" ).arg( (char*)pSec->Name ) ,
                                parent
                                );
 
         misc = mStructTree->addField( e_union ,
-                                      tr( "union Misc" ) ,
+                                      ( "union Misc" ) ,
                                       nBaseOffset + fieldOffset( IMAGE_SECTION_HEADER , Name ) ,
                                       sizeof( pSec->Name ) ,
                                       tr( "size" ) ,
@@ -891,7 +891,7 @@ void MainWindow::analysisPEFile( )
                                       parent
                                       );
         mStructTree->addField( e_union ,
-                               tr( "DWORD PhysicalAddress" ) ,
+                               ( "DWORD PhysicalAddress" ) ,
                                nBaseOffset + sizeof( pSec->Name ) ,
                                sizeof( pSec->Misc.PhysicalAddress ) ,
                                ""  ,
@@ -900,7 +900,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_union ,
-                               tr( "DWORD VirtualSize" ) ,
+                               ( "DWORD VirtualSize" ) ,
                                nBaseOffset + sizeof( pSec->Name ) ,
                                sizeof( pSec->Misc.VirtualSize ) ,
                                tr( "size of section data in disk" ) ,
@@ -908,7 +908,7 @@ void MainWindow::analysisPEFile( )
                                misc
                                );
         mStructTree->addField( e_base,
-                               tr( "DWORD VirtualAddress" ) ,
+                               ( "DWORD VirtualAddress" ) ,
                                nBaseOffset + fieldOffset( IMAGE_SECTION_HEADER , VirtualAddress ) ,
                                sizeof( pSec->VirtualAddress ) ,
                                tr( "Section data virtual address" ) ,
@@ -918,7 +918,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD SizeOfRawData" ) ,
+                               ( "DWORD SizeOfRawData" ) ,
                                nBaseOffset + fieldOffset( IMAGE_SECTION_HEADER , SizeOfRawData ) ,
                                sizeof( pSec->SizeOfRawData ) ,
                                tr( "size of section data(fileAligment)" ) ,
@@ -927,7 +927,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD PointerToRawData" ) ,
+                               ( "DWORD PointerToRawData" ) ,
                                nBaseOffset + fieldOffset( IMAGE_SECTION_HEADER , PointerToRawData ) ,
                                sizeof( pSec->PointerToRawData ) ,
                                tr( "section datea address in file(file offset)" ) ,
@@ -935,7 +935,7 @@ void MainWindow::analysisPEFile( )
                                parent
                                );
         mStructTree->addField( e_base ,
-                               tr( "DWORD PointerToRelocations" ) ,
+                               ( "DWORD PointerToRelocations" ) ,
                                nBaseOffset + fieldOffset( IMAGE_SECTION_HEADER , PointerToRelocations ) ,
                                sizeof( pSec->PointerToRelocations ) ,
                                tr( "relocation table address(invalid)" ) ,
@@ -944,7 +944,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( " DWORD PointerToLinenumbers" ) ,
+                               ( " DWORD PointerToLinenumbers" ) ,
                                nBaseOffset + fieldOffset( IMAGE_SECTION_HEADER , PointerToLinenumbers ) ,
                                sizeof( pSec->PointerToLinenumbers ) ,
                                tr( "line number table address(invalid)" ) ,
@@ -952,7 +952,7 @@ void MainWindow::analysisPEFile( )
                                parent
                                );
         mStructTree->addField( e_base ,
-                               tr( "WORD  NumberOfRelocations" ) ,
+                               ( "WORD  NumberOfRelocations" ) ,
                                nBaseOffset + fieldOffset( IMAGE_SECTION_HEADER , NumberOfRelocations ) ,
                                sizeof( pSec->NumberOfRelocations ) ,
                                tr( "size of relocation(invalid)" ) ,
@@ -960,7 +960,7 @@ void MainWindow::analysisPEFile( )
                                parent
                                );
         mStructTree->addField( e_base ,
-                               tr( "WORD  NumberOfLinenumbers" ) ,
+                               ( "WORD  NumberOfLinenumbers" ) ,
                                nBaseOffset + fieldOffset( IMAGE_SECTION_HEADER , NumberOfLinenumbers ) ,
                                sizeof( pSec->NumberOfLinenumbers ) ,
                                tr( "NumberOfLinenumbers(invalid)" ) ,
@@ -968,7 +968,7 @@ void MainWindow::analysisPEFile( )
                                parent
                                );
         mStructTree->addField( e_base ,
-                               tr( "DWORD Characteristics" ) ,
+                               ( "DWORD Characteristics" ) ,
                                nBaseOffset + fieldOffset( IMAGE_SECTION_HEADER , Characteristics ) ,
                                sizeof( pSec->Characteristics ) ,
                                tr( "section Characteristics in memory" ) ,
@@ -987,7 +987,7 @@ void MainWindow::analysisPEFile( )
     // 添加区段数据
     auto addSectionData = [ &parentBase , &sectionDataToken]( TypeTree* mStructTree , pe_SectionHeader* pSec) {
         mStructTree->addField( e_base ,
-                               tr( "%1 section Data" ).arg( (char*)pSec->Name ) ,
+                               QString( "%1 section Data" ).arg( (char*)pSec->Name ) ,
                                pSec->PointerToRawData,
                                pSec->SizeOfRawData ,
                                tr( "section data" ) ,
@@ -1028,7 +1028,7 @@ void MainWindow::analysisPEFile( )
     if( exportTable != nullptr ) {
 
         parent = mStructTree->addField( e_struct ,
-                                        tr( "IMAGE_EXPORT_DIRECTORY" ) ,
+                                        ( "IMAGE_EXPORT_DIRECTORY" ) ,
                                         parentBase ,
                                         sizeof( IMAGE_EXPORT_DIRECTORY ) ,
                                         tr( "import funtion table" ) ,
@@ -1036,7 +1036,7 @@ void MainWindow::analysisPEFile( )
                                         );
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD Characteristics" ) ,
+                               ( "DWORD Characteristics" ) ,
                                parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , Characteristics ) ,
                                sizeof( exportTable->Characteristics ) ,
                                tr( "unused" ) ,
@@ -1045,7 +1045,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD TimeDateStamp" ) ,
+                               ( "DWORD TimeDateStamp" ) ,
                                parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , TimeDateStamp ) ,
                                sizeof( exportTable->TimeDateStamp ) ,
                                tr( "TimeDateStamp" ) ,
@@ -1054,7 +1054,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( "WORD MajorVersion" ) ,
+                               ( "WORD MajorVersion" ) ,
                                parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , MajorVersion ) ,
                                sizeof( exportTable->MajorVersion ) ,
                                tr( "unused" ) ,
@@ -1063,7 +1063,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( "WORD MinorVersion" ) ,
+                               ( "WORD MinorVersion" ) ,
                                parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , MinorVersion ) ,
                                sizeof( exportTable->MinorVersion ) ,
                                tr( "unused" ) ,
@@ -1072,7 +1072,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD Name" ) ,
+                               ( "DWORD Name" ) ,
                                parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , Name ) ,
                                sizeof( exportTable->Name ) ,
                                tr( "Dll name" ) ,
@@ -1082,7 +1082,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD Base" ) ,
+                               ( "DWORD Base" ) ,
                                parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , Base ) ,
                                sizeof( exportTable->Base ) ,
                                tr( "base of export function order" ) ,
@@ -1091,7 +1091,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD NumberOfFunctions" ) ,
+                               ( "DWORD NumberOfFunctions" ) ,
                                parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , NumberOfFunctions ) ,
                                sizeof( exportTable->NumberOfFunctions ) ,
                                tr( "total of export function" ) ,
@@ -1100,7 +1100,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD NumberOfNames" ) ,
+                               ( "DWORD NumberOfNames" ) ,
                                parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , NumberOfNames ) ,
                                sizeof( exportTable->NumberOfNames ) ,
                                tr( "total of function by name export" ) ,
@@ -1109,7 +1109,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         temp = mStructTree->addField( e_base ,
-                                      tr( "DWORD AddressOfFunctions" ) ,
+                                      ( "DWORD AddressOfFunctions" ) ,
                                       parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , AddressOfFunctions ) ,
                                       sizeof( exportTable->AddressOfFunctions ) ,
                                       tr( "address of function address table (RVA)" ) ,
@@ -1135,7 +1135,7 @@ void MainWindow::analysisPEFile( )
 
 
         temp = mStructTree->addField( e_base ,
-                                      tr( "DWORD AddressOfNames" ) ,
+                                      ( "DWORD AddressOfNames" ) ,
                                       parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , AddressOfNames ) ,
                                       sizeof( exportTable->AddressOfNames ) ,
                                       tr( "name table address(RVA)" ) ,
@@ -1163,7 +1163,7 @@ void MainWindow::analysisPEFile( )
 
 
         temp = mStructTree->addField( e_base ,
-                                      tr( "DWORD AddressOfNameOrdinals" ) ,
+                                      ( "DWORD AddressOfNameOrdinals" ) ,
                                       parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , AddressOfNameOrdinals ) ,
                                       sizeof( exportTable->AddressOfNameOrdinals ) ,
                                       tr( "ordinals table address(RVA)" ) ,
@@ -1197,7 +1197,7 @@ void MainWindow::analysisPEFile( )
         parentBase = (int)importTable - peFile.fileBase( );
 
         parent = mStructTree->addField( e_struct ,
-                                        tr( "IMAGE_IMPORT_DESCRIPTOR" ) ,
+                                        ( "IMAGE_IMPORT_DESCRIPTOR" ) ,
                                         parentBase + 0 ,
                                         sizeof( IMAGE_IMPORT_DESCRIPTOR ) ,
                                         tr( "Import table" ) ,
@@ -1205,7 +1205,7 @@ void MainWindow::analysisPEFile( )
                                         );
 
         temp = mStructTree->addField( e_union,
-                                      tr( "DUMMYUNIONNAME" ) ,
+                                      ( "DUMMYUNIONNAME" ) ,
                                       parentBase + 0 ,//偏移
                                       fieldOffset( IMAGE_IMPORT_DESCRIPTOR , TimeDateStamp ) ,//大小
                                       tr( "(INT)" ) ,//注释
@@ -1213,7 +1213,7 @@ void MainWindow::analysisPEFile( )
                                       parent
                                       );
         mStructTree->addField( e_base ,
-                               tr( "DWORD Characteristics" ) ,
+                               ( "DWORD Characteristics" ) ,
                                parentBase + fieldOffset( IMAGE_IMPORT_DESCRIPTOR , Characteristics ) ,
                                sizeof( importTable->Characteristics ) ,
                                ""  ,
@@ -1221,7 +1221,7 @@ void MainWindow::analysisPEFile( )
                                temp
                                );
         temp = mStructTree->addField( e_base ,
-                                      tr( "DWORD OriginalFirstThunk" ) ,
+                                      ( "DWORD OriginalFirstThunk" ) ,
                                       parentBase + fieldOffset( IMAGE_IMPORT_DESCRIPTOR , OriginalFirstThunk ) ,
                                       sizeof( importTable->OriginalFirstThunk ) ,
                                       tr( "INT address(RVA)" ) ,
@@ -1250,7 +1250,7 @@ void MainWindow::analysisPEFile( )
             
             // 添加IMAGE_THUNK_DATA
             temp2 = mStructTree->addField( e_base ,
-                                           tr( "AddressOfData" ) ,
+                                           ( "AddressOfData" ) ,
                                            offset ,
                                            sizeof( DWORD ) ,
                                            tr( "Ordinal or IMAGE_IMPORT_BY_NAME struct RVA" ) ,
@@ -1267,7 +1267,7 @@ void MainWindow::analysisPEFile( )
                 IMAGE_IMPORT_BY_NAME* pIIBN = (IMAGE_IMPORT_BY_NAME*)( peFile.RVAToOfs( rva ) + peFile.fileBase( ) );
 
                 temp2 = mStructTree->addField( e_base ,
-                                               tr( "IMAGE_IMPORT_BY_NAME" ) ,
+                                               ( "IMAGE_IMPORT_BY_NAME" ) ,
                                                peFile.RVAToOfs( rva & 0x7FFFFFFF ) ,
                                                strlen( (char*)pIIBN->Name ) + sizeof( IMAGE_IMPORT_BY_NAME ) - 1 ,
                                                tr( "Name struct rva" ) ,
@@ -1276,7 +1276,7 @@ void MainWindow::analysisPEFile( )
                                                );
 
                 mStructTree->addField( e_base ,
-                                       tr( "WORD Hint" ) ,
+                                       ( "WORD Hint" ) ,
                                        peFile.RVAToOfs( rva & 0x7FFFFFFF ) ,
                                        sizeof( WORD ) ,
                                        "" ,
@@ -1284,7 +1284,7 @@ void MainWindow::analysisPEFile( )
                                        temp2
                                        );
                 mStructTree->addField( e_base ,
-                                       tr( "CHAR   Name[1]" ) ,
+                                       ( "CHAR   Name[1]" ) ,
                                        peFile.RVAToOfs( rva & 0x7FFFFFFF ) + sizeof( WORD ) ,
                                        strlen( (char*)pIIBN->Name ) ,
                                        tr( "name" ) ,
@@ -1310,7 +1310,7 @@ void MainWindow::analysisPEFile( )
         
 
         mStructTree->addField( e_base ,
-                               tr( " DWORD TimeDateStamp;" ) ,
+                               ( " DWORD TimeDateStamp;" ) ,
                                parentBase + fieldOffset( IMAGE_IMPORT_DESCRIPTOR , TimeDateStamp ) ,
                                sizeof( importTable->TimeDateStamp ) ,
                                tr( "TimeDateStamp" ) ,
@@ -1318,7 +1318,7 @@ void MainWindow::analysisPEFile( )
                                parent
                                );
         mStructTree->addField( e_base ,
-                               tr( "DWORD ForwarderChain" ) ,
+                               ( "DWORD ForwarderChain" ) ,
                                parentBase + fieldOffset( IMAGE_IMPORT_DESCRIPTOR , ForwarderChain ) ,
                                sizeof( importTable->ForwarderChain ) ,
                                tr( "ForwarderChain" ) ,
@@ -1328,7 +1328,7 @@ void MainWindow::analysisPEFile( )
 
         pDllName = (char*)( peFile.RVAToOfs( importTable->Name ) + peFile );
         mStructTree->addField( e_base ,
-                               tr( "DWORD Name" ) ,
+                               ( "DWORD Name" ) ,
                                parentBase + fieldOffset( IMAGE_IMPORT_DESCRIPTOR , Name ) ,
                                sizeof( importTable->Name ) ,
                                tr( "import DLL Name" ) ,
@@ -1340,7 +1340,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         temp = mStructTree->addField( e_base ,
-                                      tr( "DWORD FirstThunk" ) ,
+                                      ( "DWORD FirstThunk" ) ,
                                       parentBase + fieldOffset( IMAGE_IMPORT_DESCRIPTOR , FirstThunk ) ,
                                       sizeof( importTable->FirstThunk ) ,
                                       tr( "IAT address(RVA)" ) ,
@@ -1376,7 +1376,7 @@ void MainWindow::analysisPEFile( )
     auto addRelactionBlack = [ &parent , &peFile , &bIs32PeFile ]( TypeTree* mStructTree , int offset , pe_Relacation *pRelTab ) {
 
         Field* temp2 = mStructTree->addField( e_struct ,
-                                              tr( "IMAGE_BASE_RELOCATION" ) ,
+                                              ( "IMAGE_BASE_RELOCATION" ) ,
                                               offset ,
                                               pRelTab->SizeOfBlock ,
                                               tr( "recation black" ) ,
@@ -1385,7 +1385,7 @@ void MainWindow::analysisPEFile( )
                                               );
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD VirtualAddress" ) ,
+                               ( "DWORD VirtualAddress" ) ,
                                offset + fieldOffset( IMAGE_BASE_RELOCATION , VirtualAddress ) ,
                                sizeof( pRelTab->VirtualAddress ) ,
                                tr( "recation black start RVA" ) ,
@@ -1397,7 +1397,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD SizeOfBlock" ) ,
+                               ( "DWORD SizeOfBlock" ) ,
                                offset + fieldOffset( IMAGE_BASE_RELOCATION , SizeOfBlock ) ,
                                sizeof( pRelTab->SizeOfBlock ) ,
                                tr( "all the block size" ) ,
@@ -1410,7 +1410,7 @@ void MainWindow::analysisPEFile( )
         Typeoffset* pOffset = (Typeoffset*)( pRelTab + 1 );
         DWORD       dwSize = pRelTab->SizeOfBlock - sizeof( IMAGE_BASE_RELOCATION );
         mStructTree->addField( e_base ,
-                               tr( "WORD TypeOffset[]" ) ,
+                               ( "WORD TypeOffset[]" ) ,
                                (int)pOffset - peFile ,
                                dwSize ,
                                tr( "all the block size" ) ,
@@ -1428,7 +1428,7 @@ void MainWindow::analysisPEFile( )
     if( pRecation != NULL ) {
 
         parent = mStructTree->addField( e_struct ,
-                                        tr( "Relacation table" ) ,
+                                        ( "Relacation table" ) ,
                                         parentBase ,
                                         peFile.getDataDirectory( )[ 5 ].Size ,
                                         tr( "IMAGE_BASE_RELOCATION Array" ) ,
@@ -1465,7 +1465,7 @@ void MainWindow::analysisPEFile( )
     {
 
         Field* temp = mStructTree->addField( e_struct ,
-                                             tr( "IMAGE_RESOURCE_DIRECTORY" ) ,
+                                             ( "IMAGE_RESOURCE_DIRECTORY" ) ,
                                              offset ,
                                              sizeof( IMAGE_RESOURCE_DIRECTORY ) ,
                                              comment ,
@@ -1473,7 +1473,7 @@ void MainWindow::analysisPEFile( )
                                              parent
                                              );
         mStructTree->addField( e_base,
-                               tr( "DWORD Characteristics" ) ,
+                               ( "DWORD Characteristics" ) ,
                                offset + fieldOffset( IMAGE_RESOURCE_DIRECTORY , Characteristics ) ,
                                sizeof( pDir->Characteristics ) ,
                                tr("invalid"),
@@ -1483,7 +1483,7 @@ void MainWindow::analysisPEFile( )
 
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD TimeDateStamp" ) ,
+                               ( "DWORD TimeDateStamp" ) ,
                                offset + fieldOffset( IMAGE_RESOURCE_DIRECTORY , TimeDateStamp ) ,
                                sizeof( pDir->TimeDateStamp ) ,
                                tr( "invalid" ) ,
@@ -1491,7 +1491,7 @@ void MainWindow::analysisPEFile( )
                                temp
                                );
         mStructTree->addField( e_base ,
-                               tr( "WORD MajorVersion" ) ,
+                               ( "WORD MajorVersion" ) ,
                                offset + fieldOffset( IMAGE_RESOURCE_DIRECTORY , MajorVersion ) ,
                                sizeof( pDir->MajorVersion ) ,
                                tr( "invalid" ) ,
@@ -1499,7 +1499,7 @@ void MainWindow::analysisPEFile( )
                                temp
                                );
         mStructTree->addField( e_base ,
-                               tr( "WORD MinorVersion" ) ,
+                               ( "WORD MinorVersion" ) ,
                                offset + fieldOffset( IMAGE_RESOURCE_DIRECTORY , MinorVersion ) ,
                                sizeof( pDir->MinorVersion ) ,
                                tr( "invalid" ) ,
@@ -1507,7 +1507,7 @@ void MainWindow::analysisPEFile( )
                                temp
                                );
         mStructTree->addField( e_base ,
-                               tr( "WORD NumberOfNamedEntries" ) ,
+                               ( "WORD NumberOfNamedEntries" ) ,
                                offset + fieldOffset( IMAGE_RESOURCE_DIRECTORY , NumberOfNamedEntries ) ,
                                sizeof( pDir->NumberOfNamedEntries ) ,
                                tr( "Number Of Named Entries" ) ,
@@ -1515,7 +1515,7 @@ void MainWindow::analysisPEFile( )
                                temp
                                );
         mStructTree->addField( e_base ,
-                               tr( "WORD NumberOfIdEntries" ) ,
+                               ( "WORD NumberOfIdEntries" ) ,
                                offset + fieldOffset( IMAGE_RESOURCE_DIRECTORY , NumberOfIdEntries ) ,
                                sizeof( pDir->NumberOfIdEntries ) ,
                                tr( "Number Of Id Entries" ) ,
@@ -1591,7 +1591,7 @@ void MainWindow::analysisPEFile( )
 
         // 解析出资源的ID
         Field* temp = mStructTree->addField( e_struct ,
-                                             tr( "IMAGE_RESOURCE_DIRECTORY_ENTRY" ) ,
+                                             ( "IMAGE_RESOURCE_DIRECTORY_ENTRY" ) ,
                                              offset ,
                                              sizeof( IMAGE_RESOURCE_DIRECTORY_ENTRY ) ,
                                              comment ,
@@ -1600,7 +1600,7 @@ void MainWindow::analysisPEFile( )
                                              );
 
         Field* union1 = mStructTree->addField( e_union ,
-                                               tr( "unio NameOrId" ) ,
+                                               ( "unio NameOrId" ) ,
                                                offset ,
                                                sizeof( DWORD ) ,
                                                tr("name or id information") ,
@@ -1608,7 +1608,7 @@ void MainWindow::analysisPEFile( )
                                                temp
                                                );
         Field* struct1 = mStructTree->addField( e_struct ,
-                                                tr( "struct NameOffset" ) ,
+                                                ( "struct NameOffset" ) ,
                                                 offset ,
                                                 sizeof( DWORD ) ,
                                                 tr( "name offset" ) ,
@@ -1616,7 +1616,7 @@ void MainWindow::analysisPEFile( )
                                                 union1
                                                 );
         mStructTree->addField( e_base ,
-                               tr( "DWORD NameOffset : 31" ) ,
+                               ( "DWORD NameOffset : 31" ) ,
                                offset ,
                                sizeof( DWORD ) ,
                                tr( "name offset" ) ,
@@ -1624,7 +1624,7 @@ void MainWindow::analysisPEFile( )
                                struct1
                                );
         mStructTree->addField( e_base,
-                               tr( "DWORD NameIsString : 1" ) ,
+                               ( "DWORD NameIsString : 1" ) ,
                                offset ,
                                sizeof( DWORD ) ,
                                tr( "1 -> NameOffset is valid, otherwise Nameoffset is invalid" ) ,
@@ -1635,7 +1635,7 @@ void MainWindow::analysisPEFile( )
         //-------------------------------------------------------------//
 
         union1 = mStructTree->addField( e_union ,
-                                        tr( "union Directory Or Data" ) ,
+                                        ( "union Directory Or Data" ) ,
                                         offset + sizeof( DWORD ) ,
                                         sizeof( DWORD ) ,
                                         tr( "offset , maybe offset to Directory, maybe offset to Data" ) ,
@@ -1643,7 +1643,7 @@ void MainWindow::analysisPEFile( )
                                         temp
                                         );
         mStructTree->addField( e_base ,
-                               tr( "DWORD OffsetToData" ) ,
+                               ( "DWORD OffsetToData" ) ,
                                offset ,
                                sizeof( DWORD ) ,
                                "" ,
@@ -1652,7 +1652,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         struct1 = mStructTree->addField( e_struct ,
-                                         tr( "struct OffsetToDirectory" ) ,
+                                         ( "struct OffsetToDirectory" ) ,
                                          offset ,
                                          sizeof( DWORD ) ,
                                          tr( "if DataIsDirectory is 1,then OffsetToDirectory is invalid" ) ,
@@ -1660,7 +1660,7 @@ void MainWindow::analysisPEFile( )
                                          union1
                                          );
         mStructTree->addField( e_base ,
-                               tr( "DWORD OffsetToDirectory : 31" ) ,
+                               ( "DWORD OffsetToDirectory : 31" ) ,
                                offset ,
                                sizeof( DWORD ) ,
                                "" ,
@@ -1669,7 +1669,7 @@ void MainWindow::analysisPEFile( )
                                );
 
         mStructTree->addField( e_base ,
-                               tr( "DWORD DataIsDirectory : 1" ) ,
+                               ( "DWORD DataIsDirectory : 1" ) ,
                                offset ,
                                sizeof( DWORD ) ,
                                "" ,
@@ -1686,14 +1686,14 @@ void MainWindow::analysisPEFile( )
                                          Field* parent ) {
 
         Field* temp = mStructTree->addField( e_struct ,
-                                             tr( "IMAGE_RESOURCE_DATA_ENTRY" ) ,
+                                             ( "IMAGE_RESOURCE_DATA_ENTRY" ) ,
                                              offset ,
                                              sizeof( IMAGE_RESOURCE_DATA_ENTRY ) ,
                                              comment ,
                                              0 ,
                                              parent );
         mStructTree->addField( e_base ,
-                               tr( "DWORD OffsetToData" ) ,
+                               ( "DWORD OffsetToData" ) ,
                                offset + fieldOffset( IMAGE_RESOURCE_DATA_ENTRY , OffsetToData ) ,
                                sizeof( pEntry->OffsetToData ) ,
                                tr( "resources data address(RVA)" ) ,
@@ -1704,7 +1704,7 @@ void MainWindow::analysisPEFile( )
                                pEntry->Size
                                );
         mStructTree->addField( e_base ,
-                               tr( "DWORD Size" ) ,
+                               ( "DWORD Size" ) ,
                                offset + fieldOffset( IMAGE_RESOURCE_DATA_ENTRY , Size ) ,
                                sizeof( pEntry->Size ) ,
                                tr( "resources size" ) ,
@@ -1712,7 +1712,7 @@ void MainWindow::analysisPEFile( )
                                temp
                                );
         mStructTree->addField( e_base ,
-                               tr( "DWORD CodePage" ) ,
+                               ( "DWORD CodePage" ) ,
                                offset + fieldOffset( IMAGE_RESOURCE_DATA_ENTRY , CodePage ) ,
                                sizeof( pEntry->CodePage ) ,
                                0 ,
@@ -1720,7 +1720,7 @@ void MainWindow::analysisPEFile( )
                                temp
                                );
         mStructTree->addField( e_base ,
-                               tr( "DWORD Reserved" ) ,
+                               ( "DWORD Reserved" ) ,
                                offset + fieldOffset( IMAGE_RESOURCE_DATA_ENTRY , Reserved ) ,
                                sizeof( pEntry->Reserved ) ,
                                0 ,
