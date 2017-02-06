@@ -20,8 +20,8 @@ HexTextEditor::HexTextEditor( QWidget* parent )
     , mCurLine( 0 )
     , mRollStep( 10 )
     , mFontMetrics( nullptr )
-    , mFontColor( Qt::darkBlue )
-    , mBKColor( Qt::white )
+    , mColorHexText( Qt::darkBlue )
+    , mBKColorHexText( Qt::white )
     , mColorLineNumer( Qt::blue )
     , mBKColorLineNumber( Qt::white )
     , mCharWidth( )
@@ -69,6 +69,7 @@ void HexTextEditor::hexToString( const char* pHex , int nLen , char* pBuff )
         pBuff += 3;
     }
 
+    *( --pBuff ) = 0; // 倒数第二个是空格,将它去掉
 }
 
 void HexTextEditor::getHexString( const char* pHex , int nLen , char* pBuff )
@@ -98,7 +99,7 @@ void HexTextEditor::paintEvent( QPaintEvent *event )
 
 
     // 将背景刷成白色
-    painter.fillRect( painter.viewport( ) , QBrush( mBKColor ) );
+    painter.fillRect( painter.viewport( ) , QBrush( mBKColorHexText ) );
 
    
 
@@ -141,8 +142,16 @@ void HexTextEditor::wheelEvent( QWheelEvent * e )
 
 
     if( numSteps > 0 ) {
+        if( (QApplication::keyboardModifiers() == Qt::ControlModifier) ){
+            QFont font = this->font();
+            font.setPixelSize(font.pixelSize() + 10);
+            setFont(font);
+            viewport()->repaint();
+            return ;
+        }
         if( mCurLine <= 0 )
             return;
+
 
         emit wheelUp( mRollStep );
 
@@ -154,6 +163,14 @@ void HexTextEditor::wheelEvent( QWheelEvent * e )
         mScrollBar->setSliderPosition( mCurLine );
     }
     else {
+        if( (QApplication::keyboardModifiers() == Qt::ControlModifier) ){
+            QFont font = this->font();
+            font.setPixelSize(font.pixelSize() - 10);
+            setFont(font);
+            viewport()->repaint();
+            return ;
+        }
+
         if( mCurLine >= mMaxLine )
             return ;
 
@@ -450,12 +467,15 @@ void HexTextEditor::menuEditTriggered( )
     getSelectionText( text );
 
     HexEditDialog dlg( this );
-    dlg.exec( ( mSelectEndIndex - mSelectBeginIndex ) * 3 -1, text );
+    if( !dlg.exec( ( mSelectEndIndex - mSelectBeginIndex ) * 3 - 1 , text ) )
+        return;
+
     QStringList hexList = text.split( ' ');
 
-    int j = mSelectBeginIndex;
+    int j = mSelectBeginIndex < mSelectEndIndex ? mSelectBeginIndex : mSelectEndIndex;
 
     for( auto &i : hexList ) {
+        
         edit( j , i.toInt( 0,16) );
         ++j;
     }
@@ -761,8 +781,8 @@ void HexTextEditor::paintHexText( QPainter& painter )
     int     nSize = 0;
     nSize = mHexData.size( ) - mCurLine * LINE_ITEM_COUNT;
 
-    painter.setPen( mFontColor );
-    painter.setBrush( QBrush( mBKColor ) );
+    painter.setPen( mColorHexText );
+    painter.setBrush( QBrush( mBKColorHexText ) );
     painter.setFont( this->font( ) );
     for( int i = mCurLine , line = 0; line < mMaxVisualLine && i < mMaxLine; ++i , ++line ) {
 
@@ -815,6 +835,7 @@ void HexTextEditor::paintHexTextLine( QPainter& painter ,
         if( nullptr != ( pToken = mTokenList.getToken( i + absolutePos ) ) ) {
 
             painter.setPen( pToken->mFontColor );
+            pToken->mFont.setPixelSize( this->font( ).pixelSize( ) );
             painter.setFont( pToken->mFont );
             strncpy( buff , pStr + i * 3 , pToken->mLen * 3 );
             drawText( painter ,
@@ -828,8 +849,8 @@ void HexTextEditor::paintHexTextLine( QPainter& painter ,
             i += pToken->mLen;
 
             // 恢复原来的画刷画笔字体.
-            painter.setPen( mFontColor );
-            painter.setBrush( QBrush( mBKColor ) );
+            painter.setPen( mColorHexText );
+            painter.setBrush( QBrush( mBKColorHexText ) );
             painter.setFont( this->font( ) );
             continue;
         }
@@ -1137,6 +1158,62 @@ void HexTextEditor::redo( )
         pData[ node.index ] = (char)node.data;
         viewport( )->repaint( );
     }
+}
+
+QByteArray HexTextEditor::getRowData( ) const
+{
+    return mHexData;
+}
+
+
+QColor HexTextEditor::getColorSelect() const
+{
+    return mColorSelect;
+}
+
+void HexTextEditor::setColorSelect(const QColor &colorSelect)
+{
+    mColorSelect = colorSelect;
+}
+
+QColor HexTextEditor::getBKColor() const
+{
+    return mBKColorHexText;
+}
+
+void HexTextEditor::setBKColor(const QColor &bKColor)
+{
+    mBKColorHexText = bKColor;
+}
+
+QColor HexTextEditor::getFontColor() const
+{
+    return mColorHexText;
+}
+
+void HexTextEditor::setFontColor(const QColor &fontColor)
+{
+    mColorHexText = fontColor;
+}
+
+QColor HexTextEditor::getBKColorLineNumber() const
+{
+    return mBKColorLineNumber;
+}
+
+void HexTextEditor::setBKColorLineNumber(const QColor &bKColorLineNumber)
+{
+    mBKColorLineNumber = bKColorLineNumber;
+}
+
+QColor HexTextEditor::getColorLineNumer() const
+{
+    return mColorLineNumer;
+}
+
+void HexTextEditor::setColorLineNumer(const QColor &colorLineNumer)
+{
+    mColorLineNumer = colorLineNumer;
 }
 
 

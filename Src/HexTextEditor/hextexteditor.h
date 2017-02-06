@@ -22,8 +22,8 @@
 #include "tokenlist.h"
 #include "qscrollbar.h"
 
-class QScrollBar;
 
+class QScrollBar;
 
 #define LINE_ITEM_COUNT 16
 
@@ -59,7 +59,7 @@ public:
     {
         int    index;
         int    data;
-    };
+    }NODE;
 
     bool    isEmpty( )const {return mData.isEmpty(); }
     int     size( )const{return mData.size ();};
@@ -194,10 +194,26 @@ public:
 
 
 public:
-
+    QByteArray      getRowData( )const;
     bool            edit( int nIndex , const char data );
     void            undo( ); // 撤销
     void            redo( ); // 重做
+
+    void            configureColor( ); // 弹出一个对话框, 用于配置颜色
+    QColor          getColorSelect() const;
+    void            setColorSelect(const QColor &colorSelect);
+
+    QColor          getBKColor() const;
+    void            setBKColor(const QColor &bKColor);
+
+    QColor          getFontColor() const;
+    void            setFontColor(const QColor &fontColor);
+
+    QColor          getBKColorLineNumber() const;
+    void            setBKColorLineNumber(const QColor &bKColorLineNumber);
+
+    QColor          getColorLineNumer() const;
+    void            setColorLineNumer(const QColor &colorLineNumer);
 
 protected:
     QByteArray      mHexData;   // 二进制数据(用于显示)
@@ -216,14 +232,15 @@ protected:
 
     QColor          mColorLineNumer; // 行号的颜色 
     QColor          mBKColorLineNumber;// 行号的背景颜色
-    QColor          mFontColor; // 十六进制文本字体颜色
-    QColor          mBKColor; // 十六进制文本栏的背景颜色
+    QColor          mColorHexText; // 十六进制文本字体颜色
+    QColor          mBKColorHexText; // 十六进制文本栏的背景颜色
     QColor          mColorSelect; // 选中区域的背景颜色
+
 
     QFontMetrics*   mFontMetrics; // 字体信息
 
     TokenList       mTokenList; // 着色器
-
+    
 
 private:
     bool            mControlKeyStatus;

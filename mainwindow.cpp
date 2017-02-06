@@ -9,6 +9,11 @@
 #include "Src\pe\pe.h"
 #include "QTextCodec"
 #include <QLabel>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QComboBox>
+#include "Src\HexTextEditor\hextexteditorcolorConfigure.h"
+
 
 MainWindow::MainWindow( QWidget *parent )
     :QMainWindow( parent ) ,
@@ -72,7 +77,32 @@ MainWindow::MainWindow( QWidget *parent )
 
     setAcceptDrops( true );
     mHexTextEditor->setAcceptDrops( false );
+
+    // 连接菜单信号
+    connect( ui->actionOpen ,
+             SIGNAL( triggered( ) ) ,
+             this ,
+             SLOT( onMenuOpenAction( ) ) );
+
+    connect( ui->actionSave ,
+             SIGNAL( triggered( ) ) ,
+             this ,
+             SLOT( onMenuSaveAction( ) ) );
+
+    connect( ui->actionSave_as ,
+             SIGNAL( triggered( ) ) ,
+             this ,
+             SLOT( onMenuSaveasAction( ) ) );
+    connect( ui->actionColorConfigtrue ,
+             SIGNAL( triggered( ) ) ,
+             this ,
+             SLOT( onMenuColorConfigtrue( ) ) );
+    
+
+    mColorCfgDlg = new HexTextEditorColorConfigureDlg( this );
+
 }
+
 
 MainWindow::~MainWindow()
 {
@@ -169,19 +199,7 @@ void MainWindow::dropEvent( QDropEvent * event )
     QList<QUrl> urls = event->mimeData( )->urls( );
     QString fileName = urls.first( ).toLocalFile( );
 
-    QFile file( fileName );
-    file.open( QIODevice::ReadOnly );
-    if( file.isOpen( ) )
-    {
-        mTreeWidget->clear( );
-        mHexTextEditor->cleaer( );
-        mStructTree->clear( );
-
-        mFileData = file.readAll( );
-        mHexTextEditor->setHexData( mFileData );
-
-        analysisPEFile( );
-    }
+    openFile( fileName );
 }
 
 
@@ -190,6 +208,22 @@ void MainWindow::dragEnterEvent( QDragEnterEvent *event )
     if( event->mimeData( )->hasFormat( "text/uri-list" ) ) {
         //允许放下文件
         event->acceptProposedAction( );
+    }
+}
+
+void MainWindow::openFile( const QString& path )
+{
+    QFile file( path );
+    file.open( QIODevice::ReadOnly );
+    if( file.isOpen( ) ) {
+        mTreeWidget->clear( );
+        mHexTextEditor->cleaer( );
+        mStructTree->clear( );
+
+        mFileData = file.readAll( );
+        mHexTextEditor->setHexData( mFileData );
+
+        analysisPEFile( );
     }
 }
 
@@ -213,8 +247,8 @@ void MainWindow::analysisPEFile( )
     PE                  peFile( (char*)mFileData.data( ) , true );
     pe_SectionHeader*   pSectionHeader;
     TokenList::Token    sectionDataToken( 0 , 0 , QColor( Qt::darkGreen ) );
-    QColor              sectionDatacolor[ 5 ] = { Qt::darkMagenta , Qt::green , Qt::darkYellow , Qt::gray , Qt::darkGreen };
     DWORD               addressTableOffset;
+    QColor              sectionColor[ 5 ] = { Qt::darkGreen , Qt::gray , Qt::darkYellow , Qt::green , Qt::blue };
 
     QString name[ 16 ] = {
         tr( "import table" ) ,
@@ -242,7 +276,7 @@ void MainWindow::analysisPEFile( )
     }
     
 
-    // 解析文件头
+    // 解析DOS头
     token( 0 , sizeof( IMAGE_DOS_HEADER ) , QColor( Qt::gray ) );
     parent = mStructTree->addField( e_struct ,
                                     ( "IMAGE_DOS_HEADER" ) ,
@@ -347,7 +381,7 @@ void MainWindow::analysisPEFile( )
                            );
    
 
-    // PE文件头
+    // 解析NT头
     parentBase = peFile.getDosHeader( )->e_lfanew;
     if( peFile.getFileHeader( )->Characteristics&IMAGE_FILE_32BIT_MACHINE )
     {
@@ -380,7 +414,7 @@ void MainWindow::analysisPEFile( )
 
 
     
-    token( parentBase + fieldOffset( IMAGE_NT_HEADERS32 , FileHeader ) , sizeof( peFile.getNtHeader( )->FileHeader ) , QColor( Qt::blue ) );
+    token( 0,0 , QColor( Qt::blue ) );
     fileHeaderField = mStructTree->addField( e_struct ,
                                              ( "IMAGE_FILE_HEADER FileHeader" ) ,
                                              parentBase + fieldOffset( IMAGE_NT_HEADERS32 , FileHeader ) ,
@@ -391,7 +425,7 @@ void MainWindow::analysisPEFile( )
                                              &token
                                              );
 
-    token( parentBase + fieldOffset( IMAGE_NT_HEADERS32 , OptionalHeader ) , sizeof( peFile.getNtHeader( )->OptionalHeader ) , QColor( Qt::red ) );
+    token( 0 , 0 , QColor( Qt::red ) );
     if( peFile.getFileHeader( )->Characteristics&IMAGE_FILE_32BIT_MACHINE ) {
         optionHeaderFiele = mStructTree->addField( e_struct ,
                                                    ( "IMAGE_OPTIONAL_HEADER32 OptionalHeader" ) ,
@@ -996,9 +1030,9 @@ void MainWindow::analysisPEFile( )
                                );
     };
 
-    
+
     for( int i = 0; i < peFile.getFileHeader( )->NumberOfSections; ++i ) {
-        sectionDataToken.mFontColor = sectionDatacolor[ i % 5 ];
+        sectionDataToken.mFontColor = sectionColor[ i % 5 ];
         addSectionData( mStructTree , pSectionHeader + i);
     }
 
@@ -1840,5 +1874,67 @@ void MainWindow::onEditStringColumn( int nLine , int nRow )
     buff.sprintf("line:%d,row:%d",nLine,nRow);
     mLinePosition->setText(buff);
 }
+
+void MainWindow::onMenuOpenAction( )
+{
+    mFilePath = QFileDialog::getOpenFileName( this ,
+                                              tr( "Open File" ) ,
+                                              "" ,
+                                              tr( "PE file (*.exe *.dll *.sys)" ) ,
+                                              0 );
+    if( !mFilePath.isNull( ) ) {
+        openFile( mFilePath );
+    }
+}
+
+void MainWindow::onMenuSaveAction( )
+{
+    QByteArray data = mHexTextEditor->getRowData( );
+    if( data.isEmpty( ) )
+        return ;
+
+    if( mFilePath.isEmpty( ) )
+        return ;
+
+    QFile file( mFilePath );
+    file.open( QIODevice::WriteOnly );
+    if( !file.isOpen( ) ) {
+        QMessageBox::critical( NULL ,
+                               tr( "error" ) ,
+                               tr( "file can not open" ) ,
+                               QMessageBox::YesAll
+                               );
+        return ;
+    }
+
+    file.write( data );
+    file.close( );
+    
+}
+
+void MainWindow::onMenuSaveasAction( )
+{
+    QString path = mFilePath;
+    mFilePath = QFileDialog::getSaveFileName( this ,
+                                  tr( "save file" ) ,
+                                  "" ,
+                                  tr( "PE file (*.exe *.dll *.sys)" ) ,
+                                  0 ,
+                                  0
+                                  );
+
+    if( !mFilePath.isEmpty( ) ) {
+        onMenuSaveAction( );
+        mFilePath = path;
+    }
+}
+
+void MainWindow::onMenuColorConfigtrue( )
+{
+    mColorCfgDlg->setModal( true );
+    mColorCfgDlg->exec( );
+}
+
+
 
 

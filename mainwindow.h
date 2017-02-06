@@ -12,6 +12,7 @@ class MainWindow;
 
 class QTreeWidget;
 class QLabel;
+class HexTextEditorColorConfigureDlg;
 
 class MainWindow : public QMainWindow
 {
@@ -25,16 +26,27 @@ public:
     void dropEvent( QDropEvent * );
     void dragEnterEvent( QDragEnterEvent * );
 
+    void openFile( const QString& path );
     void analysisPEFile();
-    
 
 public slots:
     void onItemClicked( QTreeWidgetItem * item , int column );
     void onCurrentItemChanged( QTreeWidgetItem * current , QTreeWidgetItem * previous );
     void onEditHexTextColumn( int nLine , int nRow );
     void onEditStringColumn( int nLine , int nRow );
-private:
-    Ui::MainWindow *ui;
+
+    void onMenuOpenAction( );
+    void onMenuSaveAction( );
+    void onMenuSaveasAction( );
+    void onMenuColorConfigtrue( );
+    
+protected:
+
+
+public:
+    HexTextEditorColorConfigureDlg* mColorCfgDlg;
+    QString         mFilePath;
+    Ui::MainWindow* ui;
     HexTextEditor*  mHexTextEditor;
     QTreeWidget*    mTreeWidget;
     TypeTree*       mStructTree;

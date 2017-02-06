@@ -46,6 +46,9 @@
     <ClCompile Include="Src\HexTextEditor\hextexteditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Src\HexTextEditor\hextexteditorcolorConfigure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -69,6 +72,9 @@
     <CustomBuild Include="Src\HexTextEditor\hextexteditor.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="Src\HexTextEditor\hextexteditorcolorConfigure.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="mainwindow.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -90,6 +96,12 @@
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="release\moc_hextexteditor.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="debug\moc_hextexteditorcolorConfigure.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="release\moc_hextexteditorcolorConfigure.cpp">
       <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="debug\moc_mainwindow.cpp">

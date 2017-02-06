@@ -81,7 +81,7 @@ bool HexEditDialog::exec( int maxLineEditChar , QString& text )
     curMax.sprintf( "(0/%d)" , maxLineEditChar );
     mLabel->setText( curMax );
 
-    int count = 0;
+
     curMax = ">";
     for( int i = 0; i < text.size( ); ++i ) {
         if( text[ i ] == ' ' ) {

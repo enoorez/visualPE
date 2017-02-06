@@ -138,6 +138,7 @@
     <ClCompile Include="Src\TypeTree.cpp" />
     <ClCompile Include="Src\HexTextEditor\hexeditdialog.cpp" />
     <ClCompile Include="Src\HexTextEditor\hextexteditor.cpp" />
+    <ClCompile Include="Src\HexTextEditor\hextexteditorcolorConfigure.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainwindow.cpp" />
     <ClCompile Include="Src\pe\pe.cpp" />
@@ -165,6 +166,16 @@
       <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">MOC Src/HexTextEditor/hextexteditor.h</Message>
       <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">debug\moc_hextexteditor.cpp;%(Outputs)</Outputs>
     </CustomBuild>
+    <CustomBuild Include="Src\HexTextEditor\hextexteditorcolorConfigure.h">
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">Src\HexTextEditor\hextexteditorcolorConfigure.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">setlocal&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;D:\QT\5.5\msvc2013\bin\moc.exe  -DUNICODE -DWIN32 -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -D_MSC_VER=1800 -D_WIN32 -ID:/QT/5.5/msvc2013/mkspecs/win32-msvc2013 -IE:/project/visualPE -ID:/QT/5.5/msvc2013/include -ID:/QT/5.5/msvc2013/include/QtWidgets -ID:/QT/5.5/msvc2013/include/QtGui -ID:/QT/5.5/msvc2013/include/QtANGLE -ID:/QT/5.5/msvc2013/include/QtCore Src\HexTextEditor\hextexteditorcolorConfigure.h -o release\moc_hextexteditorcolorConfigure.cpp&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;endlocal</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">MOC Src/HexTextEditor/hextexteditorcolorConfigure.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">release\moc_hextexteditorcolorConfigure.cpp;%(Outputs)</Outputs>
+      <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">Src\HexTextEditor\hextexteditorcolorConfigure.h;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">setlocal&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;D:\QT\5.5\msvc2013\bin\moc.exe  -DUNICODE -DWIN32 -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -D_MSC_VER=1800 -D_WIN32 -ID:/QT/5.5/msvc2013/mkspecs/win32-msvc2013 -IE:/project/visualPE -ID:/QT/5.5/msvc2013/include -ID:/QT/5.5/msvc2013/include/QtWidgets -ID:/QT/5.5/msvc2013/include/QtGui -ID:/QT/5.5/msvc2013/include/QtANGLE -ID:/QT/5.5/msvc2013/include/QtCore Src\HexTextEditor\hextexteditorcolorConfigure.h -o debug\moc_hextexteditorcolorConfigure.cpp&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;endlocal</Command>
+      <Message Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">MOC Src/HexTextEditor/hextexteditorcolorConfigure.h</Message>
+      <Outputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">debug\moc_hextexteditorcolorConfigure.cpp;%(Outputs)</Outputs>
+    </CustomBuild>
     <CustomBuild Include="mainwindow.h">
       <AdditionalInputs Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">mainwindow.h;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">setlocal&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;D:\QT\5.5\msvc2013\bin\moc.exe  -DUNICODE -DWIN32 -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -D_MSC_VER=1800 -D_WIN32 -ID:/QT/5.5/msvc2013/mkspecs/win32-msvc2013 -IE:/project/visualPE -ID:/QT/5.5/msvc2013/include -ID:/QT/5.5/msvc2013/include/QtWidgets -ID:/QT/5.5/msvc2013/include/QtGui -ID:/QT/5.5/msvc2013/include/QtANGLE -ID:/QT/5.5/msvc2013/include/QtCore mainwindow.h -o release\moc_mainwindow.cpp&#x000D;&#x000A;if errorlevel 1 goto VCEnd&#x000D;&#x000A;endlocal</Command>
@@ -189,6 +200,12 @@
       <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="release\moc_hextexteditor.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="debug\moc_hextexteditorcolorConfigure.cpp">
+      <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Release|Win32&apos;">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="release\moc_hextexteditorcolorConfigure.cpp">
       <ExcludedFromBuild Condition="&apos;$(Configuration)|$(Platform)&apos;==&apos;Debug|Win32&apos;">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="debug\moc_mainwindow.cpp">
