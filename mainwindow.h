@@ -27,19 +27,24 @@ public:
     void dragEnterEvent( QDragEnterEvent * );
 
     void openFile( const QString& path );
-    void analysisPEFile();
+    bool analysisPEFile();
+    bool analysisCOFFFile( );
 
 public slots:
     void onItemClicked( QTreeWidgetItem * item , int column );
     void onCurrentItemChanged( QTreeWidgetItem * current , QTreeWidgetItem * previous );
     void onEditHexTextColumn( int nLine , int nRow );
     void onEditStringColumn( int nLine , int nRow );
+    void onHexEdtiorMenuPopup( QMenu* menu);
+    void onHexEditMenuClick( );
+    void onHexEditMenuSelectFieldFollowMouse( );
 
     void onMenuOpenAction( );
     void onMenuSaveAction( );
     void onMenuSaveasAction( );
     void onMenuColorConfigtrue( );
-    
+
+
 protected:
 
 
@@ -51,9 +56,11 @@ public:
     QTreeWidget*    mTreeWidget;
     TypeTree*       mStructTree;
     QByteArray      mFileData;
-    QLabel*         mLineInfo;
     QLabel*         mLinePosition;
     QLabel*         mLineDataComment;
+
+    Field*          mMouseOnItem;
+    bool            mSelectFieldFollowMouse;
 
 };
 

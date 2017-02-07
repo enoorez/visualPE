@@ -13,11 +13,15 @@
 #include <QMessageBox>
 #include <QComboBox>
 #include "Src\HexTextEditor\hextexteditorcolorConfigure.h"
+#include <time.h>
+#include "Src\COFF\COFFSTRUCT.h"
 
 
 MainWindow::MainWindow( QWidget *parent )
     :QMainWindow( parent ) ,
-    ui( new Ui::MainWindow )
+    ui( new Ui::MainWindow ),
+    mMouseOnItem(nullptr ),
+    mSelectFieldFollowMouse(true )
 {
 
     ui->setupUi( this );
@@ -62,15 +66,12 @@ MainWindow::MainWindow( QWidget *parent )
              SLOT( onEditStringColumn( int , int ) ) );
 
     mLinePosition = new QLabel;
-    mLineInfo = new QLabel;
     mLineDataComment = new QLabel;
 
-    mLinePosition->setMinimumWidth( 80 ); // 鼠标信息
-    mLineInfo->setMinimumWidth( 120);     
+    mLinePosition->setMinimumWidth( 120 ); // 鼠标信息
     mLineDataComment->setMinimumWidth( 210 );
 
     ui->statusBar->addWidget( mLinePosition );
-    ui->statusBar->addWidget( mLineInfo );
     ui->statusBar->addWidget( mLineDataComment );
 
 
@@ -98,11 +99,40 @@ MainWindow::MainWindow( QWidget *parent )
              this ,
              SLOT( onMenuColorConfigtrue( ) ) );
     
+    connect( mHexTextEditor ,
+             SIGNAL( menuPopup( QMenu* ) ) ,
+             SLOT(onHexEdtiorMenuPopup(QMenu*) ) );
+
 
     mColorCfgDlg = new HexTextEditorColorConfigureDlg( this );
 
+
+    // 检查命令行参数
+    QStringList arguments = QCoreApplication::arguments( );
+
+    if( arguments.size( ) >= 2 ) {
+        openFile( arguments[ 1 ] );
+    }
 }
 
+QString UTCTime2SystemTime( __int64 time )
+{
+    struct tm timeinfo;
+
+    QString buff;
+
+
+    gmtime_s( &timeinfo , &time);
+    buff.sprintf( "%04d/%02d/%02d %02d:%02d:%02d" ,
+                  1900 + timeinfo.tm_year ,
+                  timeinfo.tm_mon + 1 ,
+                  timeinfo.tm_mday ,
+                  timeinfo.tm_hour + 8 , //时区转换
+                  timeinfo.tm_min ,
+                  timeinfo.tm_sec
+                  ); 
+    return buff;
+}
 
 MainWindow::~MainWindow()
 {
@@ -213,6 +243,9 @@ void MainWindow::dragEnterEvent( QDragEnterEvent *event )
 
 void MainWindow::openFile( const QString& path )
 {
+    QFont font( "Consolas" , 10 );
+    mHexTextEditor->setFont( font );
+
     QFile file( path );
     file.open( QIODevice::ReadOnly );
     if( file.isOpen( ) ) {
@@ -224,6 +257,7 @@ void MainWindow::openFile( const QString& path )
         mHexTextEditor->setHexData( mFileData );
 
         analysisPEFile( );
+        analysisCOFFFile( );
     }
 }
 
@@ -233,7 +267,7 @@ void MainWindow::openFile( const QString& path )
 
 
 
-void MainWindow::analysisPEFile( )
+bool MainWindow::analysisPEFile( )
 {
     char*               pDllName;
     Field*              temp;
@@ -272,7 +306,7 @@ void MainWindow::analysisPEFile( )
     // 判断是否是PE文件
     if( peFile.getDosHeader( )->e_magic != 'ZM'
         || peFile.getNtHeader( )->Signature != 'EP' ) {
-        return ;
+        return false;
     }
     
 
@@ -371,6 +405,85 @@ void MainWindow::analysisPEFile( )
                            peFile.getDosHeader( )->e_sp ,
                            parent
                            );
+
+
+
+    
+    mStructTree->addField( e_base ,
+                           ( "WORD e_csum" ) ,
+                           fieldOffset( IMAGE_DOS_HEADER , e_csum ) ,
+                           sizeof( peFile.getDosHeader( )->e_csum ) ,
+                           "" ,
+                           peFile.getDosHeader( )->e_csum ,
+                           parent
+                           );
+    mStructTree->addField( e_base ,
+                           ( "WORD e_ip" ) ,
+                           fieldOffset( IMAGE_DOS_HEADER , e_ip ) ,
+                           sizeof( peFile.getDosHeader( )->e_ip ) ,
+                           "" ,
+                           peFile.getDosHeader( )->e_ip ,
+                           parent
+                           );
+    mStructTree->addField( e_base ,
+                           ( "WORD e_cs" ) ,
+                           fieldOffset( IMAGE_DOS_HEADER , e_cs ) ,
+                           sizeof( peFile.getDosHeader( )->e_cs ) ,
+                           "" ,
+                           peFile.getDosHeader( )->e_cs ,
+                           parent
+                           );
+    mStructTree->addField( e_base ,
+                           ( "WORD e_lfarlc" ) ,
+                           fieldOffset( IMAGE_DOS_HEADER , e_lfarlc ) ,
+                           sizeof( peFile.getDosHeader( )->e_lfarlc ) ,
+                           "" ,
+                           peFile.getDosHeader( )->e_lfarlc ,
+                           parent
+                           );
+    mStructTree->addField( e_base ,
+                           ( "WORD e_ovno" ) ,
+                           fieldOffset( IMAGE_DOS_HEADER , e_ovno ) ,
+                           sizeof( peFile.getDosHeader( )->e_ovno ) ,
+                           "" ,
+                           peFile.getDosHeader( )->e_ovno ,
+                           parent
+                           );
+    mStructTree->addField( e_base ,
+                           ( "WORD e_res[ 4 ]" ) ,
+                           fieldOffset( IMAGE_DOS_HEADER , e_res ) ,
+                           sizeof( peFile.getDosHeader( )->e_res ) ,
+                           "" ,
+                           0 ,
+                           parent
+                           );
+    mStructTree->addField( e_base ,
+                           ( "WORD e_oemid" ) ,
+                           fieldOffset( IMAGE_DOS_HEADER , e_oemid ) ,
+                           sizeof( peFile.getDosHeader( )->e_oemid),
+                           "" ,
+                           peFile.getDosHeader( )->e_oemid ,
+                           parent
+                           );
+
+    mStructTree->addField( e_base ,
+                           ( "WORD e_oeminfo" ) ,
+                           fieldOffset( IMAGE_DOS_HEADER , e_oeminfo ) ,
+                           sizeof( peFile.getDosHeader( )->e_oeminfo ) ,
+                           "" ,
+                           peFile.getDosHeader( )->e_oeminfo ,
+                           parent
+                           );
+    mStructTree->addField( e_base ,
+                           ( "WORD   e_res2[ 10 ]" ) ,
+                           fieldOffset( IMAGE_DOS_HEADER , e_res2 ) ,
+                           sizeof( peFile.getDosHeader( )->e_res2 ) ,
+                           "" ,
+                           0 ,
+                           parent
+                           );
+
+
     mStructTree->addField( e_base ,
                            ( "LONG e_lfanew" ) ,
                            fieldOffset( IMAGE_DOS_HEADER , e_lfanew ) ,
@@ -466,12 +579,14 @@ void MainWindow::analysisPEFile( )
                            peFile.getFileHeader( )->NumberOfSections ,
                            fileHeaderField
                            );
+
+
     mStructTree->addField( e_base ,
                            ( "DWORD TimeDateStamp" ) ,
                            parentBase + fieldOffset( IMAGE_FILE_HEADER , TimeDateStamp ) ,
                            sizeof( peFile.getFileHeader( )->TimeDateStamp ) ,
                            tr( "TimeDateStamp" ) ,
-                           (int)peFile.getFileHeader( )->TimeDateStamp,
+                           UTCTime2SystemTime(peFile.getFileHeader( )->TimeDateStamp),
                            fileHeaderField
                            );
     mStructTree->addField( e_base ,
@@ -1062,7 +1177,7 @@ void MainWindow::analysisPEFile( )
     if( exportTable != nullptr ) {
 
         parent = mStructTree->addField( e_struct ,
-                                        ( "IMAGE_EXPORT_DIRECTORY" ) ,
+                                        tr( "IMAGE_EXPORT_DIRECTORY" ) ,
                                         parentBase ,
                                         sizeof( IMAGE_EXPORT_DIRECTORY ) ,
                                         tr( "import funtion table" ) ,
@@ -1083,7 +1198,7 @@ void MainWindow::analysisPEFile( )
                                parentBase + fieldOffset( IMAGE_EXPORT_DIRECTORY , TimeDateStamp ) ,
                                sizeof( exportTable->TimeDateStamp ) ,
                                tr( "TimeDateStamp" ) ,
-                               (int)exportTable->TimeDateStamp ,
+                               UTCTime2SystemTime(exportTable->TimeDateStamp) ,
                                parent
                                );
 
@@ -1231,7 +1346,7 @@ void MainWindow::analysisPEFile( )
         parentBase = (int)importTable - peFile.fileBase( );
 
         parent = mStructTree->addField( e_struct ,
-                                        ( "IMAGE_IMPORT_DESCRIPTOR" ) ,
+                                        tr( "IMAGE_IMPORT_DESCRIPTOR" ) ,
                                         parentBase + 0 ,
                                         sizeof( IMAGE_IMPORT_DESCRIPTOR ) ,
                                         tr( "Import table" ) ,
@@ -1348,7 +1463,7 @@ void MainWindow::analysisPEFile( )
                                parentBase + fieldOffset( IMAGE_IMPORT_DESCRIPTOR , TimeDateStamp ) ,
                                sizeof( importTable->TimeDateStamp ) ,
                                tr( "TimeDateStamp" ) ,
-                               (int)importTable->TimeDateStamp ,
+                               UTCTime2SystemTime(importTable->TimeDateStamp) ,
                                parent
                                );
         mStructTree->addField( e_base ,
@@ -1410,7 +1525,7 @@ void MainWindow::analysisPEFile( )
     auto addRelactionBlack = [ &parent , &peFile , &bIs32PeFile ]( TypeTree* mStructTree , int offset , pe_Relacation *pRelTab ) {
 
         Field* temp2 = mStructTree->addField( e_struct ,
-                                              ( "IMAGE_BASE_RELOCATION" ) ,
+                                              tr( "IMAGE_BASE_RELOCATION" ) ,
                                               offset ,
                                               pRelTab->SizeOfBlock ,
                                               tr( "recation black" ) ,
@@ -1462,7 +1577,7 @@ void MainWindow::analysisPEFile( )
     if( pRecation != NULL ) {
 
         parent = mStructTree->addField( e_struct ,
-                                        ( "Relacation table" ) ,
+                                        tr( "Relacation table" ) ,
                                         parentBase ,
                                         peFile.getDataDirectory( )[ 5 ].Size ,
                                         tr( "IMAGE_BASE_RELOCATION Array" ) ,
@@ -1521,7 +1636,7 @@ void MainWindow::analysisPEFile( )
                                offset + fieldOffset( IMAGE_RESOURCE_DIRECTORY , TimeDateStamp ) ,
                                sizeof( pDir->TimeDateStamp ) ,
                                tr( "invalid" ) ,
-                               (int)pDir->TimeDateStamp ,
+                               UTCTime2SystemTime(pDir->TimeDateStamp ),
                                temp
                                );
         mStructTree->addField( e_base ,
@@ -1859,6 +1974,8 @@ void MainWindow::analysisPEFile( )
 
     }
 
+
+    return true;
 }
 
 void MainWindow::onEditHexTextColumn( int nLine , int nRow )
@@ -1866,6 +1983,19 @@ void MainWindow::onEditHexTextColumn( int nLine , int nRow )
     QString buff;
     buff.sprintf("line:%d,row:%d",nLine,nRow);
     mLinePosition->setText(buff);
+
+    Field* field = mStructTree->findToken( nLine , nRow );
+    if( field != nullptr && mSelectFieldFollowMouse ) {
+        //mStructTree->selectOnTreeWidget( field );
+        
+        buff = tr( "field:[" ) + field->item->text( 0 ) + "] "
+            + tr( "value:[" ) + field->item->text( 1 ) + "] "
+            + tr( "comment:[" ) + field->item->text( 3 ) + "]";
+
+        mStructTree->selectOnHexEditor( field );
+        mLineDataComment->setText( buff );
+        mMouseOnItem = field;
+    }
 }
 
 void MainWindow::onEditStringColumn( int nLine , int nRow )
@@ -1873,6 +2003,7 @@ void MainWindow::onEditStringColumn( int nLine , int nRow )
     QString buff;
     buff.sprintf("line:%d,row:%d",nLine,nRow);
     mLinePosition->setText(buff);
+    mMouseOnItem = nullptr;
 }
 
 void MainWindow::onMenuOpenAction( )
@@ -1934,6 +2065,474 @@ void MainWindow::onMenuColorConfigtrue( )
     mColorCfgDlg->setModal( true );
     mColorCfgDlg->exec( );
 }
+
+bool MainWindow::analysisCOFFFile( )
+{
+    TokenList::Token token(0,0);
+    Field*           parent = nullptr;
+    QColor           coffHeaderColor( 0x12 , 0x12 , 0x12 );
+
+    if( mFileData.isEmpty( ) )
+        return false;
+
+    COFF_HEADER* pHead = (COFF_HEADER*)mFileData.data( );
+    if( pHead->wMacine != 0x14c && pHead->wMacine != 0x14E )
+        return false;
+
+
+
+    // 添加头部
+    token.mFontColor = coffHeaderColor;
+    parent = mStructTree->addField( e_struct ,
+                                    "COFF_HEADER" ,
+                                    0 ,
+                                    sizeof( COFF_HEADER ) ,
+                                    tr( "COFF file  header" ) ,
+                                    0 ,
+                                    0 ,
+                                    &token
+                                    );
+
+    mStructTree->addField( e_base ,
+                           "WORD wMacine" ,
+                           fieldOffset( COFF_HEADER , wMacine ) ,
+                           sizeof( pHead->wMacine ) ,
+                           tr( "CPU architecture" ) ,
+                           pHead->wMacine ,
+                           parent
+                           );
+
+    mStructTree->addField( e_base ,
+                           "WORD numberOfSection" ,
+                           fieldOffset( COFF_HEADER , numberOfSection ) ,
+                           sizeof( pHead->numberOfSection ) ,
+                           tr( "numberOfSection" ) ,
+                           pHead->numberOfSection ,
+                           parent
+                           );
+    mStructTree->addField( e_base ,
+                           "DOWRD uTimeDataStamp" ,
+                           fieldOffset( COFF_HEADER , uTimeDataStamp ) ,
+                           sizeof( pHead->uTimeDataStamp ) ,
+                           tr( "uTimeDataStamp" ) ,
+                           UTCTime2SystemTime(pHead->uTimeDataStamp) ,
+                           parent
+                           );
+    mStructTree->addField( e_base ,
+                           "DWORD symbolTableOffset" ,
+                           fieldOffset( COFF_HEADER , pointerToSymbol ) ,
+                           sizeof( pHead->pointerToSymbol ) ,
+                           tr( "COFF file symbol Table address(file offset)" ) ,
+                           (int)pHead->pointerToSymbol ,
+                           parent ,
+                           0 ,
+                           pHead->pointerToSymbol ,
+                           pHead->numberOfSymbol * SIZEOFSYMBOL
+                           );
+
+    mStructTree->addField( e_base ,
+                           "DWORD numberOfSymbols" ,
+                           fieldOffset( COFF_HEADER , numberOfSymbol ) ,
+                           sizeof( pHead->numberOfSymbol ) ,
+                           tr( "numberOfSymbols" ) ,
+                           (int)pHead->numberOfSymbol ,
+                           parent
+                           );
+
+    mStructTree->addField( e_base ,
+                           "WORD sizeofOptionHeader" ,
+                           fieldOffset( COFF_HEADER , wOptHeaSize ) ,
+                           sizeof( pHead->wOptHeaSize ) ,
+                           tr( "invalid" ) ,
+                           pHead->wOptHeaSize ,
+                           parent
+                           );
+
+    mStructTree->addField( e_base ,
+                           "WORD wFlags" ,
+                           fieldOffset( COFF_HEADER , wFlags ) ,
+                           sizeof( pHead->wFlags ) ,
+                           tr( "wFlags" ) ,
+                           pHead->wFlags ,
+                           parent
+                           );
+
+    // 添加扩展头
+    mStructTree->addField( e_struct ,
+                           "COFF_OPTION_HEADER" ,
+                           0 , 0 , 0 , 0 , 0 );
+
+
+    // 添加区段
+  
+    COFF_SEC_HEA* pSec = (COFF_SEC_HEA*)( pHead->wOptHeaSize + sizeof( COFF_HEADER ) + (int)pHead );
+    
+    parent = mStructTree->addField( e_struct ,
+                                    "COFF_SECTION_HEADER" ,
+                                    (int)pSec - (int)pHead ,
+                                    sizeof( COFF_SEC_HEA ) * pHead->numberOfSection ,
+                                    0 ,
+                                    0
+                                    );
+
+
+
+
+    auto addSection = [&parent,&pHead ]( TypeTree* mStructTree , int offset , COFF_SEC_HEA* pSec ) {
+
+
+        Field *temp = mStructTree->addField( e_struct ,
+                                        "COFF_SECTION_HEADER" ,
+                                        offset ,
+                                        sizeof( COFF_SEC_HEA ) ,
+                                        pSec->szName ,
+                                        0 ,
+                                        parent
+                                        );
+
+        mStructTree->addField( e_base ,
+                               "char szName[ 8 ]" ,
+                               offset + fieldOffset( COFF_SEC_HEA , szName ) ,
+                               sizeof( pSec->szName ) ,
+                               tr( "section name" ) ,
+                               pSec->szName ,
+                               temp
+                               );
+
+        mStructTree->addField( e_base ,
+                               "DWORD virtualSize" ,
+                               offset + fieldOffset( COFF_SEC_HEA , virtualSize ) ,
+                               sizeof( pSec->virtualSize ) ,
+                               tr( "invalid" ) ,
+                               (int)pSec->virtualSize ,
+                               temp
+                               );
+
+        mStructTree->addField( e_base ,
+                               "DWORD virtualAddress" ,
+                               offset + fieldOffset( COFF_SEC_HEA , virtualAddress ) ,
+                               sizeof( pSec->virtualAddress ) ,
+                               tr( "invalid" ) ,
+                               (int)pSec->virtualAddress ,
+                               temp
+                               );
+
+        mStructTree->addField( e_base ,
+                               "DWORD sizeofRawData" ,
+                               offset + fieldOffset( COFF_SEC_HEA , sizeofRawData ) ,
+                               sizeof( pSec->sizeofRawData ) ,
+                               tr( "sizeof section data" ) ,
+                               (int)pSec->sizeofRawData ,
+                               temp
+                               );
+
+        mStructTree->addField( e_base ,
+                               "DWORD pointerToRawData" ,
+                               offset + fieldOffset( COFF_SEC_HEA , pointerToRawData ) ,
+                               sizeof( pSec->pointerToRawData ) ,
+                               tr( "section data offset in file" ) ,
+                               (int)pSec->pointerToRawData ,
+                               temp ,
+                               0 ,
+                               pSec->pointerToRawData ,
+                               pSec->sizeofRawData
+                               );
+
+        Field*temp1 = mStructTree->addField( e_base ,
+                                             "DWORD pointerToRelaction" ,
+                                             offset + fieldOffset( COFF_SEC_HEA , pointerToRelaction ) ,
+                                             sizeof( pSec->pointerToRelaction ) ,
+                                             tr( "section data relaction table ,some section dont't have" ) ,
+                                             (int)pSec->pointerToRelaction ,
+                                             temp ,
+                                             0 ,
+                                             pSec->pointerToRelaction ? pSec->pointerToRelaction : -1 ,
+                                             pSec->numberOfRelcation
+                                             );
+
+        if( pSec->numberOfRelcation && pSec->pointerToRelaction ) {
+            COFF_REL* pRelTable = (COFF_REL*)( pSec->pointerToRelaction + (int)pHead );
+            
+            Field* temp2 = nullptr;
+            for( int i = 0; i < pSec->numberOfRelcation ; ++i ) {
+
+                temp2 = mStructTree->addField( e_struct ,
+                                               "COFF_REL" ,
+                                               pSec->pointerToRelaction ,
+                                               sizeof( COFF_REL ) ,
+                                               "section relaction data" ,
+                                               0 ,
+                                               temp1
+                                               );
+
+                mStructTree->addField( e_base ,
+                                       "DWORD address" ,
+                                       pSec->pointerToRelaction + fieldOffset( COFF_REL , address ) ,
+                                       sizeof( pRelTable->address ) ,
+                                       tr( "" ) ,
+                                       (int)pRelTable->address ,
+                                       temp2 ,
+                                       0 ,
+                                       (int)( pRelTable->address + pSec->pointerToRawData ) ,
+                                       sizeof( DWORD )
+                                       );
+
+                mStructTree->addField( e_base ,
+                                       "DWORD symbolIndex" ,
+                                       pSec->pointerToRelaction + fieldOffset( COFF_REL , symbolIndex ) ,
+                                       sizeof( pRelTable->symbolIndex ) ,
+                                       getSymbolName( pHead , pRelTable->symbolIndex ) ,
+                                       (int)pRelTable->symbolIndex ,
+                                       temp2
+                                       );
+
+                mStructTree->addField( e_base ,
+                                       "WORD wType" ,
+                                       pSec->pointerToRelaction + fieldOffset( COFF_REL , wType ) ,
+                                       sizeof( pRelTable->wType ) ,
+                                       tr( "" ) ,
+                                       pRelTable->wType ,
+                                       temp2
+                                       );
+
+            }
+
+            mStructTree->addField( e_base ,
+                                   "DWORD pointerToLinenumber" ,
+                                   offset + fieldOffset( COFF_SEC_HEA , pointerToLinenumber ) ,
+                                   sizeof( pSec->pointerToLinenumber ) ,
+                                   tr( "section linenumber table ," ) ,
+                                   (int)pSec->pointerToLinenumber ,
+                                   temp
+                                   );
+            mStructTree->addField( e_base ,
+                                   "WORD numberOfRelcation" ,
+                                   offset + fieldOffset( COFF_SEC_HEA , numberOfRelcation ) ,
+                                   sizeof( pSec->numberOfRelcation ) ,
+                                   tr( "" ) ,
+                                   pSec->numberOfRelcation ,
+                                   temp
+                                   );
+
+            mStructTree->addField( e_base ,
+                                   "WORD numberOfLinenumber" ,
+                                   offset + fieldOffset( COFF_SEC_HEA , numberOfLinenumber ) ,
+                                   sizeof( pSec->numberOfLinenumber ) ,
+                                   tr( "" ) ,
+                                   pSec->numberOfLinenumber ,
+                                   temp
+                                   );
+            mStructTree->addField( e_base ,
+                                   "DWORD uFlags" ,
+                                   offset + fieldOffset( COFF_SEC_HEA , uFlags ) ,
+                                   sizeof( pSec->uFlags ) ,
+                                   tr( "section flag" ) ,
+                                   (int)pSec->uFlags ,
+                                   temp
+                                   );
+        }
+    };
+
+    for( int i = 0; i < pHead->numberOfSection; ++i ) {
+
+        addSection( mStructTree , (int)pSec - (int)pHead , pSec );
+        ++pSec;
+    }
+
+    char symName[ 10 ];
+    
+    // 添加符号表
+    auto addSymbol = [ &parent , pHead , &symName ]( TypeTree* mStructTree , int offset , COFF_SYMBOL* pSym ) {
+
+
+        char *pSymName = nullptr;
+        if( pSym->e.s.Zero == 1 ) {
+            COFF_STRING_TABLE* pStringTable = OFFSETTOSTRING( pHead );
+            pSymName = &pStringTable->string[ pSym->e.s.Offset ] ;
+        }
+        else {
+            strncpy( symName , pSym->e.cName , 8 );
+            pSymName = symName;
+            pSymName[ 8 ] = 0;
+        }
+
+
+        Field* temp = mStructTree->addField( e_struct ,
+                                             "COFF_SYMBOL" ,
+                                             offset ,
+                                             sizeof( COFF_SYMBOL ) ,
+                                             tr( "" ) ,
+                                             0,
+                                             parent,
+                                             0
+                                             );
+
+        Field* e = mStructTree->addField( e_union ,
+                                          "e" ,
+                                          offset ,
+                                          8 ,
+                                          tr( "symbol name" ) ,
+                                          0 ,
+                                          temp
+                                          );
+        mStructTree->addField( e_base ,
+                               "Name" ,
+                               offset ,
+                               8 ,
+                               "" ,
+                               pSym->e.cName ,
+                               e
+                               );
+        Field* struct1 = mStructTree->addField(e_struct,
+                                                "s",
+                                                offset,
+                                                8,
+                                                tr("name in string table"),
+                                                0,
+                                                e );
+        mStructTree->addField( e_base ,
+                               "DWORD Zero" ,
+                               offset ,
+                               sizeof( DWORD ) ,
+                               tr( "Set to all zeros if the name is longer than eight bytes" ) ,
+                               (int)pSym->e.s.Zero ,
+                               struct1
+                               );
+
+        
+
+        mStructTree->addField( e_base ,
+                               "DWORD Offset" ,
+                               offset + sizeof( DWORD ) ,
+                               sizeof( DWORD ) ,
+                               tr( "Offset into the String Table" ) ,
+                               (int)pSym->e.s.Offset ,
+                               struct1 ,
+                               0 ,
+                               pSym->e.s.Offset + sizeof( DWORD ) ,
+                               strlen(pSymName )
+                               );
+        mStructTree->addField( e_base ,
+                               "DWORD Value" ,
+                               offset + fieldOffset( COFF_SYMBOL , value ) ,
+                               sizeof( pSym->value ) ,
+                               tr( "depends on field iSection and Class" ) ,
+                               (int)pSym->value ,
+                               temp
+                               );
+        mStructTree->addField( e_base ,
+                               "DWORD iSection" ,
+                               offset + fieldOffset( COFF_SYMBOL , iSection ) ,
+                               sizeof( pSym->iSection ) ,
+                               tr( "using a one-based index into the Section Table" ) ,
+                               (int)pSym->iSection ,
+                               temp
+                               );
+
+
+        mStructTree->addField( e_base ,
+                               "WORD Type" ,
+                               offset + fieldOffset( COFF_SYMBOL , Type ) ,
+                               sizeof( pSym->Type ) ,
+                               tr( "A number representing type" ) ,
+                               (int)pSym->Type ,
+                               temp
+                               );
+        mStructTree->addField( e_base ,
+                               "BYTE Cass" ,
+                               offset + fieldOffset( COFF_SYMBOL , Cass ) ,
+                               sizeof( pSym->Cass ) ,
+                               tr( "Enumerated value representing storage class" ) ,
+                               (int)pSym->Cass ,
+                               temp
+                               );
+
+        mStructTree->addField( e_base ,
+                               "BYTE numberOfAnnex" ,
+                               offset + fieldOffset( COFF_SYMBOL , numberOfAnnex ) ,
+                               sizeof( pSym->numberOfAnnex ) ,
+                               tr( "Number of auxiliary symbol table entries that follow this record" ) ,
+                               (int)pSym->numberOfAnnex ,
+                               temp
+                               );
+    };
+
+    parent = mStructTree->addField( e_struct ,
+                                    tr( "Symbol table" ) ,
+                                    pHead->pointerToSymbol ,
+                                    pHead->numberOfSymbol * sizeof( COFF_SYMBOL ) ,
+                                    0 ,
+                                    0 );
+
+    COFF_SYMBOL* pSym = (COFF_SYMBOL*)( pHead->pointerToSymbol + (int)pHead );
+    for( DWORD i = 0; i < pHead->numberOfSymbol; i++ ) {
+        addSymbol( mStructTree , (int)pSym - (int)pHead , pSym );
+        pSym++;
+    }
+
+
+    COFF_STRING_TABLE *pStringTable = OFFSETTOSTRING( pHead );
+    // 添加字符串表
+    parent = mStructTree->addField( e_struct ,
+                                    "String table" ,
+                                    (int)pStringTable - (int)pHead ,
+                                    pStringTable->dwSize ,
+                                    "String table" ,
+                                    0 , 0
+                                    );
+    mStructTree->addField( e_base ,
+                           "DWORD size" ,
+                           (int)pStringTable - (int)pHead ,
+                           sizeof( pStringTable->dwSize ) ,
+                           "String table size" ,
+                           (int)pStringTable->dwSize ,
+                           parent
+                           );
+
+    mStructTree->addField( e_base ,
+                           "char string[]" ,
+                           (int)pStringTable - (int)pHead + sizeof( DWORD ) ,
+                           pStringTable->dwSize - sizeof( DWORD ) ,
+                           "String table size" ,
+                           0 ,
+                           parent
+                           );
+
+
+    return true;
+}
+
+void MainWindow::onHexEdtiorMenuPopup( QMenu* menu )
+{
+    QString nSwitch = mSelectFieldFollowMouse ? tr( "Disable select field follow mouse" ) : tr( "Enabel select field follow mouse" );
+ 
+
+    connect( menu->addAction( nSwitch ) ,
+             SIGNAL( triggered( ) ) ,
+             this ,
+             SLOT( onHexEditMenuSelectFieldFollowMouse( ) ) );
+
+
+    if( !mSelectFieldFollowMouse || mMouseOnItem == nullptr )
+        return;
+
+    connect( menu->addAction( tr( "&show in the TreeWidget" ) ) ,
+             SIGNAL( triggered( ) ) ,
+             this ,
+             SLOT( onHexEditMenuClick() ) );
+}
+
+void MainWindow::onHexEditMenuClick( )
+{
+    if( mMouseOnItem )
+        mStructTree->selectOnTreeWidget( mMouseOnItem );
+}
+
+void MainWindow::onHexEditMenuSelectFieldFollowMouse( )
+{
+    mSelectFieldFollowMouse = mSelectFieldFollowMouse ? false : true;
+}
+
 
 
 

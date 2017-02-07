@@ -18,14 +18,14 @@ HexTextEditor::HexTextEditor( QWidget* parent )
     , mMaxVisualLine( 0 )
     , mMaxLine( 0 )
     , mCurLine( 0 )
-    , mRollStep( 10 )
+    , mRollStep( 4 )
     , mFontMetrics( nullptr )
     , mColorHexText( Qt::darkBlue )
     , mBKColorHexText( Qt::white )
     , mColorLineNumer( Qt::blue )
     , mBKColorLineNumber( Qt::white )
     , mCharWidth( )
-    , mColorSelect( QColor( 163 , 73 , 164 ) )
+    , mColorSelect( QColor( 0xcc , 0xcc, 0xcc) )
     , mMouseLbuttonStatus(false )
     , mSelectBeginIndex()
     , mSelectEndIndex()
@@ -360,6 +360,8 @@ void HexTextEditor::contextMenuEvent( QContextMenuEvent *event )
     event;
     QMenu *menu = new QMenu( this );
 
+    emit menuPopup( menu );
+
     if( !mSelect.isEmpty( ) ) {
         connect( menu->addAction( tr( "&copy" ) ) ,
                  SIGNAL( triggered( ) ) ,
@@ -425,8 +427,8 @@ void HexTextEditor::menuGotoByteTriggered( )
         return;
 
     bool isOK;
-    QString text = QInputDialog::getText( NULL , 
-                                          tr("goto") ,
+    QString text = QInputDialog::getText( NULL ,
+                                          tr( "goto" ) ,
                                           tr( "input address" ) ,
                                           QLineEdit::Normal ,
                                           "" ,
@@ -464,15 +466,17 @@ void HexTextEditor::menuEditTriggered( )
 
     // 弹出编辑框
     QString text;
-    getSelectionText( text );
+    if( !getSelectionText( text ) )
+        return ;
 
+    
     HexEditDialog dlg( this );
-    if( !dlg.exec( ( mSelectEndIndex - mSelectBeginIndex ) * 3 - 1 , text ) )
+    if( !dlg.exec( ( getSlectionLength() ) * 3 - 1 , text ) )
         return;
 
     QStringList hexList = text.split( ' ');
 
-    int j = mSelectBeginIndex < mSelectEndIndex ? mSelectBeginIndex : mSelectEndIndex;
+    int j = mSelect.begin( )->mLineNumber *LINE_ITEM_COUNT + mSelect.begin( )->mRow;
 
     for( auto &i : hexList ) {
         
@@ -735,7 +739,10 @@ void HexTextEditor::paintLineNumber( QPainter& painter )
     QString text;
 
     // 
+    
     painter.setPen( mColorLineNumer );
+    painter.drawText( QPoint(0,mLineHeight ) , "enorez" );
+
     for( int i = 1; i <= mMaxVisualLine && i + mCurLine <= mMaxLine; ++i ) {
 
         text.sprintf( "%0*X" , nLineNumerDigitCount , ( i + mCurLine - 1 ) * LINE_ITEM_COUNT );
@@ -1013,7 +1020,8 @@ void HexTextEditor::setSelection( int nBeginIndex , int nEndIndex )
     if( nBeginIndex < 0
         || nEndIndex < 0
         || nEndIndex < nBeginIndex
-        || nEndIndex - 1 > mHexData.size( ) )
+        || nEndIndex - 1 > mHexData.size( )
+        || nBeginIndex == nEndIndex)
         return;
 
     mSelect.clear( );
@@ -1071,19 +1079,17 @@ void HexTextEditor::setSelection( int nBeginIndex , int nEndIndex )
     viewport( )->repaint( );
 }
 
+
+
 // 获取选中区域的文本
 bool HexTextEditor::getSelectionText( QString& selectText )
 {
     if( mHexData.isEmpty( ) )
         return false;
 
-    int count = 0;
-    if( mSelect.isEmpty( ) )
+    int count = getSlectionLength( );
+    if( count == 0 )
         return false;
-
-    for( auto& i : mSelect ) {
-        count += i.mCount;
-    }
 
     char* buff = new char[ count * 3 + 1 ];
     // 将行号和列号转换成缓冲区索引号
@@ -1099,6 +1105,19 @@ bool HexTextEditor::getSelectionText( QString& selectText )
     delete[ ] buff;
     return true;
 }
+
+int HexTextEditor::getSlectionLength( )const
+{
+    int count = 0;
+    if( mSelect.isEmpty( ) )
+        return 0;
+
+    for( auto& i : mSelect ) {
+        count += i.mCount;
+    }
+    return count;
+}
+
 
 // 添加一个着色器
 void HexTextEditor::addToken( const TokenList::Token& token )
@@ -1128,6 +1147,9 @@ bool HexTextEditor::edit( int nIndex , const char data )
 {
     if( mHexData.isEmpty( ) || nIndex>=mHexData.size())
         return false;
+
+    if( mHexData.data( )[ nIndex ] == data )
+        return true;
 
     mEditUndoStack.push( nIndex , mHexData.data( )[ nIndex ] );
     mHexData.data( )[ nIndex ] = data;
@@ -1215,5 +1237,43 @@ void HexTextEditor::setColorLineNumer(const QColor &colorLineNumer)
 {
     mColorLineNumer = colorLineNumer;
 }
+
+TokenList::Token* HexTextEditor::findToken( int line , int row )
+{
+    int pos = line * LINE_ITEM_COUNT + row;
+    return mTokenList.getToken( pos );
+}
+
+int HexTextEditor::findString( const QString& string )
+{
+    char* pHex = nullptr;
+    QByteArray hex ;
+    hex.resize( string.size( ) );
+    
+    pHex = hex.data( );
+
+    char ch = 0;
+    for( auto & i: string) {
+        ch = i.toLatin1( );
+        if( ch >= 'a' && ch <= 'f' )
+            *pHex++ = ch - 'a';
+        else if( ch >= 'A' && ch <= 'Z' )
+            *pHex++ = ch - 'A';
+        else if( ch >= '0' && ch <= '9' )
+            *pHex++ = ch - '0';
+    }
+
+    return mHexData.indexOf( hex );
+}
+
+int HexTextEditor::findByte( const unsigned char* byte , int size )
+{
+    QByteArray hex ;
+    hex.resize( size );
+    memcpy( hex.data( ) , byte , size );
+    
+    return mHexData.indexOf( hex );
+}
+
 
 

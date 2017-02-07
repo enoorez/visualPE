@@ -24,6 +24,7 @@
 
 
 class QScrollBar;
+class QMenu;
 
 #define LINE_ITEM_COUNT 16
 
@@ -143,7 +144,7 @@ signals:
     void            mouseOnLineNumer( const QPoint& pos ); // 鼠标经过行号栏时
     void            mouseOnHexText( int  line , int row ); // 鼠标经过十六进制文本栏时
     void            mouseOnString( int  line , int row );  // 鼠标经过字符串栏时
-
+    void            menuPopup( QMenu *menu );
 
 public slots:
     void            menuCopyTriggered( );  // 复制十六进制文本
@@ -187,8 +188,13 @@ public:
     // 设置选中区域参数为: [开始地址,结束地址)
     void            setSelection( int nBeginIndex , int nEndIndex );
     bool            getSelectionText(QString& selectText );
+    int             getSlectionLength( )const;
+    void            highlight( int nLine , int row , int count ,const QColor& color);
+
     void            addToken( const TokenList::Token& token );
     bool            updateToken( const TokenList::Token& token );
+    TokenList::Token* findToken( int line , int row );
+
     void            clearToken( );
     void            cleaer( );
 
@@ -198,6 +204,8 @@ public:
     bool            edit( int nIndex , const char data );
     void            undo( ); // 撤销
     void            redo( ); // 重做
+    int             findString( const QString& string);
+    int             findByte( const unsigned char* byte , int size);
 
     void            configureColor( ); // 弹出一个对话框, 用于配置颜色
     QColor          getColorSelect() const;
@@ -240,7 +248,6 @@ protected:
     QFontMetrics*   mFontMetrics; // 字体信息
 
     TokenList       mTokenList; // 着色器
-    
 
 private:
     bool            mControlKeyStatus;

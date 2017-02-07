@@ -88,7 +88,7 @@ bool HexEditDialog::exec( int maxLineEditChar , QString& text )
             curMax += "NN ";
         }
     }
-    curMax += ";0";
+    curMax += "NN;0";
 
     mLineEdit->setInputMask( curMax );
 

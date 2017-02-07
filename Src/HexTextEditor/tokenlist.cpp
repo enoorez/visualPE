@@ -15,15 +15,16 @@ TokenList::Token* TokenList::getToken( int nPos )
     }
     return nullptr;
 }
+
 #define  LINE_ITEM_COUNT 16
  
 bool TokenList::addToken( const Token& token )
 {
     Token* pToken = getToken( token.mBegPos );
 
-         if( pToken ) {
-             return false;
-         }
+    if( pToken ) {
+        return false;
+    }
 
     // token中, 有一些会占用几行的空间.
     // 这样给绘制带来非常大的不便, 因此, 在这里, 要将这些占用几行的token
@@ -40,7 +41,7 @@ bool TokenList::addToken( const Token& token )
         if( nBeginIndex % LINE_ITEM_COUNT != 0 ) {
             // 得到开头部分
             temp.mBegPos = nBeginIndex;
-            temp.mLen = ( (nBeginIndex / LINE_ITEM_COUNT + 1) * LINE_ITEM_COUNT ) - nBeginIndex;
+            temp.mLen = ( ( nBeginIndex / LINE_ITEM_COUNT + 1 ) * LINE_ITEM_COUNT ) - nBeginIndex;
             mTokenList << temp;
             nBeginIndex += temp.mLen;
         }

@@ -33,6 +33,8 @@ public:
                          QColor fontColor = QColor( Qt::black ) ,
                          QFont font = QFont( "Consolas" , 10 ) );
 
+        
+
         int     next( )
         {
             return mBegPos + mLen;

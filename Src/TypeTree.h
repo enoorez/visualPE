@@ -24,7 +24,6 @@ class Field
 public:
     FieldType           type;
     Field*              parent;   // 父节点,结构体和联合体时拥有
-    QList<Field*>       subField; // 子字段,结构体和联合体时拥有,只有父节点才拥有这个列表
 
     QString             name;   //名称
     QString             comment;//注释
@@ -45,7 +44,7 @@ public:
 
     ~Field( );
 
-    Field* findSub( const QString name );
+
     Field* createField( FieldType type ,
                         const QString& name ,
                         const QString& comment ,
@@ -89,13 +88,18 @@ public:
                        );
 
     Field*  findType( FieldType type , const QString& name );
+    Field*  findToken( int line , int row );
+
+    void    selectOnHexEditor( const Field* field );
+    void    selectOnTreeWidget( const Field* field );
+
     void    clear( );
     void    repain( );
 protected:
-    QList<Field*>       mFieldList;
+    QList<Field*>           mFieldList;
     QList<USERDATAONITEM*>  mUserDataList;
 
-    QTreeWidget*        mTree;
-    HexTextEditor*      mEdit;
+    QTreeWidget*            mTree;
+    HexTextEditor*          mEdit;
 };
 

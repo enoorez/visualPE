@@ -31,6 +31,7 @@ Field* TypeTree::addField( FieldType type ,
                            int userDataSize,
                            int userDataType )
 {
+    
     // Ìí¼ÓTreeWidget½Úµã
     QTreeWidgetItem* item = new QTreeWidgetItem;
 
@@ -75,6 +76,15 @@ Field* TypeTree::addField( FieldType type ,
     item->setText( 3 , comment );
 
     mFieldList << field;
+    
+    // ÅÅÐò
+    qSort( mFieldList.begin( ) , mFieldList.end( ) , [ ]( const Field* l , const Field* r )->bool {
+        if( l->token.mLen < r->token.mLen ) {
+            return true;
+        }
+        return false;
+    } );
+
     return field;
 }
 
@@ -106,6 +116,32 @@ void TypeTree::repain( )
     mEdit->viewport( )->repaint( );
 }
 
+
+Field* TypeTree::findToken( int line , int row )
+{
+    int pos = mEdit->lineToPosition( line ) + row;
+    for( auto &i : mFieldList ) {
+        if( i->token.isMe( pos ) ) {
+            return i;
+        }
+    }
+    return nullptr;
+}
+
+
+void TypeTree::selectOnHexEditor( const Field* field )
+{
+    if( field )
+        mEdit->setSelection( field->token.mBegPos , field->token.mLen + field->token.mBegPos );
+}
+
+void TypeTree::selectOnTreeWidget( const Field* field )
+{
+    if(field )
+        mTree->setCurrentItem( field->item );
+}
+
+
 Field::Field(FieldType type , const QString& name , const QString& comment , const QVariant& value , TokenList::Token&token , QTreeWidgetItem* item /*= nullptr */ , Field* parent /*= nullptr */ )
     : parent( parent )
     , name( name )
@@ -114,33 +150,16 @@ Field::Field(FieldType type , const QString& name , const QString& comment , con
     , token( token )
     , item( item )
     , type( type )
-{ 
-    if( parent ) {
-        parent->subField.push_back( this );
-    }
-}
+{ }
 
 Field::~Field( )
 {
     
 }
 
-Field* Field::findSub( const QString name )
-{
-    for( auto& i : subField ) {
-        if( i->name == name )
-            return i;
-    }
-    return nullptr;
-}
 
 Field* Field::createField( FieldType type,const QString& name , const QString& comment , const QVariant& value , TokenList::Token&token , QTreeWidgetItem* item /*= nullptr */ , Field* parent /*= nullptr */ )
 {
-    Field* field = findSub( name );
-    if(field ) {
-        return field;
-    }
-
     return new Field(type, name , comment , value , token , item , parent );
 }
 
