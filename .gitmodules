@@ -1,0 +1,3 @@
+[submodule "Src/HexTextEditor"]
+	path = Src/HexTextEditor
+	url = https://github.com/enoorez/HexTextEditor.git
